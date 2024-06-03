@@ -1,22 +1,24 @@
 package com.chessapp.chessapp.model;
+import javafx.util.Pair;
 
-public class Pion {
+/*
+    Classe pion
+    Le pion de base sur un plateau d'échecs
+ */
+public class Pion extends Piece {
 
-    private int x;
-    private int y;
-    private int pawnType;
-
-    private int color;
-
-    public Pion(int x, int y, int pawnType, int color) throws Exception{
-        if (color != 1 && color != -1) {
-            throw new Exception("ERREUR Pion : couleur non valide");
-        }
-
-        this.pawnType = pawnType;
-        this.x = x;
-        this.y = y;
-        this.color = color;
+    public Pion(int x, int y, char pieceType, int color) throws Exception {
+        super(x, y, pieceType, color);
     }
 
+    /*
+        Fonction calculateMovements()
+        Calcule les mouvements possible du pion
+     */
+    @Override
+    public Pair<Integer, Integer>[] calculateMovements(){
+        // TODO
+
+        return new Pair[1];
+    }
 }
