@@ -1,19 +1,18 @@
 package com.chessapp.chessapp.model;
-import java.util.*;
 
 /*
     Classe Plateau
     Initialise le plateau de 8*8 cases où se déplaceront les pions
  */
 public class Plateau {
-    private Pion[][] plateau;
+    private Piece[][] plateau;
 
     /*
         Constructeur Plateau();
         Initialise la liste de liste
      */
     public Plateau() {
-        plateau = new Pion[8][8];
+        plateau = new Piece[8][8];
     }
 
     /*
@@ -44,15 +43,19 @@ public class Plateau {
             throw new Exception("ERREUR Plateau.addPawn() : case non vide");
         }
 
-        Pion pion = new Pion(x, y, pawnType, color);
+        Piece pion = new Pion(x, y, pawnType, color);
         plateau[y][x] = pion;
 
     }
 
+    /*
+        Fonction showGrid()
+        Montre la grille dans la console, utile pour debug
+     */
     public void showGrid() {
 
-        for(Pion[] liste : plateau) {
-            for(Pion p : liste) {
+        for(Piece[] liste : plateau) {
+            for(Piece p : liste) {
                 System.out.print((p == null) ? "0" : "1");
             }
             System.out.println();
@@ -60,7 +63,11 @@ public class Plateau {
 
     }
 
-    public void setGrid(Pion[][] newPlateau) {
+    /*
+        Fonction setGrid()
+        Change toute la grille manuellement, utile pour les tests
+     */
+    public void setGrid(Piece[][] newPlateau) {
         this.plateau = newPlateau;
     }
 

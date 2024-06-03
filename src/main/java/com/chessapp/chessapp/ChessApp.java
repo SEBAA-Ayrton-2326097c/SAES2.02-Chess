@@ -10,9 +10,9 @@ import java.io.IOException;
 public class ChessApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ChessApp.class.getResource("views/hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        FXMLLoader fxmlLoader = new FXMLLoader(ChessApp.class.getResource("views/ChessApp.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage.setTitle("Chess App");
         stage.setScene(scene);
         stage.show();
     }
