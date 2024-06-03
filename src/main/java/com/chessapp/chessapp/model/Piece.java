@@ -3,6 +3,8 @@ package com.chessapp.chessapp.model;
 import javafx.scene.control.Label;
 import javafx.util.Pair;
 
+import java.util.List;
+
 public abstract class Piece extends Label {
 
     private int x;
@@ -29,12 +31,14 @@ public abstract class Piece extends Label {
     public char getName() {
         return pieceType;
     }
-
+    public int getColor() {return  color;}
+    public int getX() {return x;}
+    public int getY() {return y;}
 
     /*
         Fonction abstraite calculateMovements()
         Renvoie une liste de coordonnées où la pièce peut se déplacer
      */
-    abstract Pair<Integer, Integer>[] calculateMovements();
+    public abstract List<Pair<Integer, Integer>> calculateMovements();
 
 }

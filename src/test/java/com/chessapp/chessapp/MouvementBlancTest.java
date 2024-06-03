@@ -38,6 +38,8 @@ public class MouvementBlancTest {
             plateau.addPawn(6, 6, 'P', -1); // Pion en G7
             plateau.addPawn(7, 7, 'N', -1); // Cavalier en H8
             plateau.addPawn(4, 0, 'P', -1); // Pion en A5
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +50,7 @@ public class MouvementBlancTest {
     public void testWhitePawnBlocked() {
         try {
             Piece piece = plateau.getPiece(0, 3);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             assertTrue(moves.isEmpty());
         } catch (Exception e) {
             fail("Exception during test execution: " + e.getMessage());
@@ -60,7 +62,7 @@ public class MouvementBlancTest {
     public void testWhitePawnInitialPosition() {
         try {
             Piece piece = plateau.getPiece(1, 1);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(1, 2), new Pair<>(1, 3)
             );
@@ -75,7 +77,7 @@ public class MouvementBlancTest {
     public void testWhiteRookMoves() {
         try {
             Piece piece = plateau.getPiece(2, 5);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(2, 4), new Pair<>(2, 3), new Pair<>(2, 6), new Pair<>(2, 7), // Verticalement
                     new Pair<>(1, 5), new Pair<>(0, 5), new Pair<>(3, 5) // Horizontalement
@@ -91,7 +93,7 @@ public class MouvementBlancTest {
     public void testWhiteKingMoves() {
         try {
             Piece piece = plateau.getPiece(2, 2);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(2, 1), new Pair<>(2, 3),
                     new Pair<>(1, 2), new Pair<>(3, 2),
@@ -105,10 +107,25 @@ public class MouvementBlancTest {
 
     @Test
     @DisplayName("Test des mouvements du Fou blanc en D4")
+    public void testWhitepIONSMovesD2() {
+        try {
+            Piece piece = plateau.getPiece(3, 1);
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
+            List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
+                    new Pair<>(3, 2)
+            );
+            assertTrue(moves.containsAll(expectedMoves) && expectedMoves.containsAll(moves));
+        } catch (Exception e) {
+            fail("Exception during test execution: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Test des mouvements du Fou blanc en D4")
     public void testWhiteBishopMovesD4() {
         try {
             Piece piece = plateau.getPiece(3, 3);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(4, 4), new Pair<>(5, 5), new Pair<>(6, 6),
                     new Pair<>(2, 4), new Pair<>(1, 5), new Pair<>(0, 6),
@@ -125,7 +142,7 @@ public class MouvementBlancTest {
     public void testWhiteQueenMovesE7() {
         try {
             Piece piece = plateau.getPiece(4, 6);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(4, 5), new Pair<>(4, 4), new Pair<>(4, 3), new Pair<>(4, 2), new Pair<>(4, 1), new Pair<>(4, 0),
                     new Pair<>(4, 7),
@@ -147,7 +164,7 @@ public class MouvementBlancTest {
     public void testWhiteKnightMovesH6() {
         try {
             Piece piece = plateau.getPiece(7, 5);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(5, 4), new Pair<>(5, 6), // Saute en G4 et G6
                     new Pair<>(6, 3), new Pair<>(6, 7) // Saute en F3 et F7
@@ -161,10 +178,10 @@ public class MouvementBlancTest {
 
     @Test
     @DisplayName("Test des mouvements du pion blanc en H4")
-    public void testWhitePawnInitialPosition() {
+    public void testWhitePawnInitialPosition2() {
         try {
             Piece piece = plateau.getPiece(7, 3);
-            List<Pair<Integer, Integer>> moves = piece.calculateMoves();
+            List<Pair<Integer, Integer>> moves = piece.calculateMovements();
             List<Pair<Integer, Integer>> expectedMoves = Arrays.asList(
                     new Pair<>(7, 4), new Pair<>(6, 4)
             );
