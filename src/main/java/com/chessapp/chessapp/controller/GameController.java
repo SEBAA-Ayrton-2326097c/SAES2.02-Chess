@@ -3,79 +3,94 @@ package com.chessapp.chessapp.controller;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+/**
+ * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
+ *
+ */
 public class GameController {
 
     @FXML
+    private ImageView draggedIv;
+    @FXML
     private GridPane grid;
+    private static Image bishopB = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_b.png");
+    private static Image bishopW = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_w.png");
+    private static Image empty = new Image("file:src/main/resources/com/chessapp/chessapp/img/empty.png");
+    private VBox[][] vBoxes;
 
+    /**
+     * Initialisation
+     *
+     */
     @FXML
     public void initialize() {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
+        ImageView iv = new ImageView();
+        iv.setImage(bishopB);
+        vBoxes = new VBox[8][8];
+
+        for(int j = 0; j < 8; j++) {
+            for(int i = 0; i < 8; i++) {
                 VBox vbox = new VBox();
-                Label label = new Label((i == 0) ? "drag" : "ici");
+                vbox.setStyle("-fx-border-style: solid; -fx-background-color: beige");
+                ImageView imageView = new ImageView((i == 0 && j % 2 == 0) ? bishopB : empty);
 
+                imageView.setOnDragDetected(event -> {
+                    Dragboard db = imageView.startDragAndDrop(TransferMode.ANY);
 
-                label.setOnDragDetected(event -> {
-                    Dragboard db = label.startDragAndDrop(TransferMode.ANY);
+                    draggedIv = imageView;
 
                     ClipboardContent content = new ClipboardContent();
-                    content.putString(label.getText());
+                    content.putImage(imageView.getImage());
                     db.setContent(content);
 
                     event.consume();
                 });
 
-                label.setOnDragOver(event -> {
-                    if(event.getGestureSource() != label) {
+                imageView.setOnDragOver(event -> {
+                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
                         event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        imageView.getParent().setStyle("-fx-border-color: red; -fx-background-color: beige");
                     }
 
                     event.consume();
                 });
 
-                label.setOnDragEntered(event -> {
-                    if (event.getGestureSource() != label) {
-                        label.setStyle("-fx-background-color: blue");
+                imageView.setOnDragExited(event -> {
+                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        imageView.getParent().setStyle("-fx-border-color: black; -fx-background-color: beige");
                     }
 
                     event.consume();
+
                 });
 
-                label.setOnDragExited(event -> {
-                    if (event.getGestureSource() != label) {
-                        label.setStyle("-fx-background-color: white");
-                    }
-                });
-
-                label.setOnDragDropped(event -> {
+                imageView.setOnDragDropped(event -> {
                     Dragboard db = event.getDragboard();
-                    boolean success = false;
 
-                    if (db.hasString()) {
-                        label.setText(db.getString());
-                        success = true;
-                    }
+                    imageView.setImage(db.getImage());
+                    draggedIv.setImage(empty);
 
-                    event.setDropCompleted(success);
                     event.consume();
                 });
 
-                label.setOnDragDone(event -> {
-                    if (event.getTransferMode() == TransferMode.MOVE) {
-                        label.setText("");
-                    }
+                imageView.setOnDragDone(event -> {
+                    draggedIv = null;
+                    event.consume();
                 });
 
                 vbox.setAlignment(Pos.CENTER);
 
-                vbox.getChildren().add(label);
+                vbox.getChildren().add(imageView);
+                vBoxes[i][j] = vbox;
                 grid.add(vbox, i, j);
             }
         }
@@ -84,4 +99,5 @@ public class GameController {
     public void onClick(int x, int y){
         System.out.println("clic sur " + x + ", " + y);
     }
+
 }

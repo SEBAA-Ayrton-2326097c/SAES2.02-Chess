@@ -1,9 +1,10 @@
 package com.chessapp.chessapp.model;
 
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 
-public abstract class Piece extends Label {
+public abstract class Piece extends ImageView {
 
     private int x;
     private int y;
