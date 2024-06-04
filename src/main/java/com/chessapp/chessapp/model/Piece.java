@@ -1,6 +1,5 @@
 package com.chessapp.chessapp.model;
 
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 
@@ -12,13 +11,9 @@ public abstract class Piece extends ImageView {
     private int y;
     private char pieceType;
     private int color;
+    protected Plateau plateau; // Référence au plateau
 
-
-    /*
-        Constructeur Pion()
-        Prend des coordonnées de base, et une couleur
-     */
-    public Piece(int x, int y, char pieceType, int color) throws Exception{
+    public Piece(int x, int y, char pieceType, int color, Plateau plateau) throws Exception {
         if (color != 1 && color != -1) {
             throw new Exception("ERREUR Pion : couleur non valide");
         }
@@ -27,18 +22,22 @@ public abstract class Piece extends ImageView {
         this.x = x;
         this.y = y;
         this.color = color;
+        this.plateau = plateau; // Initialisation du plateau
     }
 
     public char getName() {
         return pieceType;
     }
     public int getColor() {return  color;}
+    public int getCoordX() {return x;}
+    public int getCoordY() {return y;}
 
+    public void setCoordX(int x) { this.x = x; }
+    public void setCoordY(int y) { this.y = y; }
 
-    /*
-        Fonction abstraite calculateMovements()
-        Renvoie une liste de coordonnées où la pièce peut se déplacer
-     */
+    public Plateau getPlateau() { return plateau; }
+
+    public void setPlateau(Plateau plateau) { this.plateau = plateau; }
+
     public abstract List<Pair<Integer, Integer>> calculateMovements();
-
 }
