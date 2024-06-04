@@ -2,7 +2,11 @@ package com.chessapp.chessapp;
 
 import com.chessapp.chessapp.model.Plateau;
 import com.chessapp.chessapp.model.Piece;
+import com.chessapp.chessapp.model.Pion;
+import javafx.application.Platform;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.util.Pair;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +17,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MouvementBlancTest {
+
     private Plateau plateau;
+
+    @BeforeAll
+    public static void initJfx(){
+        Platform.startup(() -> {});
+    }
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +47,7 @@ public class MouvementBlancTest {
             plateau.addPawn(6, 4, 'P', -1); // Pion en G5
             plateau.addPawn(6, 6, 'P', -1); // Pion en G7
             plateau.addPawn(7, 7, 'N', -1); // Cavalier en H8
-            plateau.addPawn(4, 0, 'P', -1); // Pion en A5
+            plateau.addPawn(4, 0, 'P', -1); // Pion en A5*/
 
 
         } catch (Exception e) {
@@ -47,7 +57,9 @@ public class MouvementBlancTest {
 
     @Test
     @DisplayName("Test des mouvements du pion blanc en D4 bloqué par un pion noir")
-    public void testWhitePawnBlocked() {
+    public void testWhitePawnBlocked() throws Exception {
+        plateau = new Plateau();
+        plateau.addPawn(1, 1, 'P', 1);
         try {
             Piece piece = plateau.getPiece(0, 3);
             List<Pair<Integer, Integer>> moves = piece.calculateMovements();
