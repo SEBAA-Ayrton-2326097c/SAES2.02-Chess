@@ -1,11 +1,12 @@
 package com.chessapp.chessapp.model;
 
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 
 import java.util.List;
 
-public abstract class Piece extends Label {
+public abstract class Piece extends ImageView {
 
     private int x;
     private int y;
@@ -32,8 +33,7 @@ public abstract class Piece extends Label {
         return pieceType;
     }
     public int getColor() {return  color;}
-    public int getX() {return x;}
-    public int getY() {return y;}
+
 
     /*
         Fonction abstraite calculateMovements()
