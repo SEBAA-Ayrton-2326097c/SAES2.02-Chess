@@ -1,13 +1,16 @@
 package com.chessapp.chessapp.model;
 
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 
-public abstract class Piece extends Label {
+import java.util.List;
 
-    private int x;
-    private int y;
-    private char pieceType;
+public abstract class Piece extends ImageView {
+
+    private int xTab;
+    private int yTab;
+    private String pieceType;
     private int color;
 
 
@@ -15,26 +18,58 @@ public abstract class Piece extends Label {
         Constructeur Pion()
         Prend des coordonnées de base, et une couleur
      */
-    public Piece(int x, int y, char pieceType, int color) throws Exception{
+    public Piece(int xTab, int yTab, String pieceType, int color) throws Exception{
         if (color != 1 && color != -1) {
             throw new Exception("ERREUR Pion : couleur non valide");
         }
 
         this.pieceType = pieceType;
-        this.x = x;
-        this.y = y;
+        this.xTab = xTab;
+        this.yTab = yTab;
         this.color = color;
+
+        super.setFitHeight(50);
+        super.setPreserveRatio(true);
     }
 
-    public char getName() {
+    public String getPieceType() {
         return pieceType;
     }
 
+    public int getColor() {
+        return color;
+    }
 
-    /*
-        Fonction abstraite calculateMovements()
-        Renvoie une liste de coordonnées où la pièce peut se déplacer
+    public int getxTab() {
+        return xTab;
+    }
+
+    public int getyTab() {
+        return yTab;
+    }
+
+    public void setxTab(int xTab) {
+        this.xTab = xTab;
+    }
+
+    public void setyTab(int yTab) {
+        this.yTab = yTab;
+    }
+
+    /**
+     * Calcule tous les mouvements possible de la pièce
+     * @param plateau plateau sur lequel donner les mouvements possibles
+     * @return La liste de tous les mouvements possible de la pièce
      */
-    abstract Pair<Integer, Integer>[] calculateMovements();
+    public abstract List<Tuple> calculateMovements(Plateau plateau);
 
+
+    /**
+     * Vérifie si les coordonnées du mouvement fourni est un mouvement valide pour la pièce
+     * @param x X cible
+     * @param y Y cible
+     * @param plateau Plateau sur lequel vérifier le mouvement
+     * @return booléen, si le mouvement est valide ou non
+     */
+    public abstract boolean isValidMovement(int x, int y, Plateau plateau);
 }

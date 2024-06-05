@@ -22,15 +22,21 @@ public class Plateau {
         Si la première case est vide, renvoie une erreur
      */
     public void movement(int oldX, int oldY, int newX, int newY) throws Exception {
-        if(plateau[oldY][oldX] == null || plateau[newY][newX] == null) {
-            throw new Exception("ERREUR Plateau.movement() : case vide");
-        }
-        else if (plateau[oldY][oldX].getClass().getSimpleName() != "Pion") {
-            System.out.println("WARNING : type of element in " + oldY + ", " + oldX + " not a pawn");
+        if(plateau[oldY][oldX] == null) {
+            throw new Exception("ERREUR Plateau.movement() : case source vide");
         }
 
-        plateau[newY][newX] = plateau[oldX][oldY];
+        plateau[newY][newX] = plateau[oldY][oldX];
         plateau[oldY][oldX] = null;
+
+        plateau[newY][newX].setxTab(newX);
+        plateau[newY][newX].setyTab(newY);
+
+
+    }
+
+    public Piece getPiece(int x, int y){
+        return plateau[y][x];
     }
 
     /*
@@ -38,14 +44,12 @@ public class Plateau {
         Prend en argument des coordonnées et un type de pion (nombre) et le place aux coordonnées
         Si la case n'est pas vide, renvoie une erreur
      */
-    public void addPawn(int x, int y, char pawnType, int color) throws Exception {
-        if (plateau[y][x] == null) {
+    public void addPiece(int x, int y, Piece piece) throws Exception {
+        if (plateau[y][x] != null) {
             throw new Exception("ERREUR Plateau.addPawn() : case non vide");
         }
 
-        Piece pion = new Pion(x, y, pawnType, color);
-        plateau[y][x] = pion;
-
+        plateau[y][x] = piece;
     }
 
     /*
@@ -56,7 +60,7 @@ public class Plateau {
 
         for(Piece[] liste : plateau) {
             for(Piece p : liste) {
-                System.out.print((p == null) ? "0" : "1");
+                System.out.print((p == null) ? "0" : p.getPieceType().charAt(0));
             }
             System.out.println();
         }
