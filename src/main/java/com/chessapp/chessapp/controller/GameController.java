@@ -1,15 +1,13 @@
 package com.chessapp.chessapp.controller;
 
+import com.chessapp.chessapp.model.*;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
-import javafx.scene.layout.Background;
+import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
+
+import java.util.List;
 
 /**
  * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
@@ -17,87 +15,190 @@ import javafx.scene.paint.Color;
  */
 public class GameController {
 
-    @FXML
-    private ImageView draggedIv;
+
+    // TODO : Couleurs de l'interface de chess.com
     @FXML
     private GridPane grid;
-    private static Image bishopB = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_b.png");
-    private static Image bishopW = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_w.png");
-    private static Image empty = new Image("file:src/main/resources/com/chessapp/chessapp/img/empty.png");
-    private VBox[][] vBoxes;
+    private Piece movingPiece;
+
+    private StackPane[][] cases;
+    private Plateau plateau;
+
+    private int clickNumber;
+    private StackPane firstClickedPane;
+
+    int sourceX, sourceY, destX, destY;
 
     /**
-     * Initialisation
+     * Initialisation de la matrice de stackPanes, du plateau de jeu, et des events pour chaque case
      *
      */
     @FXML
-    public void initialize() {
-        ImageView iv = new ImageView();
-        iv.setImage(bishopB);
-        vBoxes = new VBox[8][8];
+    public void initialize() throws Exception {
+        cases = new StackPane[8][8];
+        plateau = new Plateau();
 
-        for(int j = 0; j < 8; j++) {
-            for(int i = 0; i < 8; i++) {
-                VBox vbox = new VBox();
-                vbox.setStyle("-fx-border-style: solid; -fx-background-color: beige");
-                ImageView imageView = new ImageView((i == 0 && j % 2 == 0) ? bishopB : empty);
+        clickNumber = 0;
 
-                imageView.setOnDragDetected(event -> {
-                    Dragboard db = imageView.startDragAndDrop(TransferMode.ANY);
+        for(int j = 0; j < 8; ++j) {
+            for (int i = 0; i < 8; i++) {
 
-                    draggedIv = imageView;
+                StackPane stackPane = new StackPane();
 
-                    ClipboardContent content = new ClipboardContent();
-                    content.putImage(imageView.getImage());
-                    db.setContent(content);
+                String squareColor = ((i + j) % 2 == 0) ? "beige" : "lightgreen";
+                stackPane.setStyle("-fx-background-color: " + squareColor + "; -fx-border-color: black");
 
-                    event.consume();
+                Piece piece = getPiece(j, i);
+
+                if(piece != null) {
+                    plateau.addPiece(i, j, piece);
+                    stackPane.getChildren().add(piece);
+                }
+
+                stackPane.setOnMouseClicked(e -> {
+                    onMouseClicked(e, stackPane);
                 });
 
-                imageView.setOnDragOver(event -> {
-                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                        imageView.getParent().setStyle("-fx-border-color: red; -fx-background-color: beige");
-                    }
-
-                    event.consume();
-                });
-
-                imageView.setOnDragExited(event -> {
-                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                        imageView.getParent().setStyle("-fx-border-color: black; -fx-background-color: beige");
-                    }
-
-                    event.consume();
-
-                });
-
-                imageView.setOnDragDropped(event -> {
-                    Dragboard db = event.getDragboard();
-
-                    imageView.setImage(db.getImage());
-                    draggedIv.setImage(empty);
-
-                    event.consume();
-                });
-
-                imageView.setOnDragDone(event -> {
-                    draggedIv = null;
-                    event.consume();
-                });
-
-                vbox.setAlignment(Pos.CENTER);
-
-                vbox.getChildren().add(imageView);
-                vBoxes[i][j] = vbox;
-                grid.add(vbox, i, j);
+                cases[i][j] = stackPane;
+                grid.add(stackPane, i, j);
             }
+        }
+
+    }
+
+    /**
+     * Donne la pièce correspondante à une case donnée au début de la partie
+     * @param x coordonnée X
+     * @param y coordonnée Y
+     * @return la pièce correspondante à la case
+     * @throws Exception si x, y invalides
+     */
+    private static Piece getPiece(int y, int x) throws Exception {
+        Piece piece = null;
+
+        if (y == 1) piece = new Pawn(x, y, -1);
+        else if (y == 6) piece = new Pawn(x, y, 1);
+
+        if (y == 0 || y == 7) {
+            int color = (y == 0) ? -1 : 1;
+
+            piece = switch (x) {
+                case 0, 7 -> new Rook(x, y, color);
+                case 1, 6 -> new Knight(x, y, color);
+                case 2, 5 -> new Bishop(x, y, color);
+                case 3 -> (color == 1) ? new Queen(x, y, color) : new King(x, y, color);
+                case 4 -> (color == 1) ? new King(x, y, color) : new Queen(x, y, color);
+                default -> piece;
+            };
+        }
+        return piece;
+    }
+
+    /**
+     * Appelle cette fonction lorsqu'on clique sur une case, elle permet de distinguer les deux phases de clics, la pièce bougée, l'appel de l'affichage. Gère aussi le mouvement graphique et technique entre deux cases et sa validité
+     * @param e L'event du clic
+     * @param stackPane Le stackpane concerné
+     */
+    public void onMouseClicked(Event e, StackPane stackPane) {
+
+        List<Tuple> availableMoves;
+
+        if (clickNumber == 0 && !stackPane.getChildren().isEmpty()) {
+            movingPiece = (Piece) stackPane.getChildren().get(0);
+            stackPane.setStyle("-fx-background-color: green; -fx-border-color: black");
+            firstClickedPane = stackPane;
+            clickNumber = 1;
+            sourceX = GridPane.getColumnIndex((Node) e.getSource());
+            sourceY = GridPane.getRowIndex((Node) e.getSource());
+
+            availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+
+            showAvailableMoves(availableMoves);
+            // System.out.println(availableMoves);
+
+        }
+        else if (clickNumber == 1) {
+            destX = GridPane.getColumnIndex((Node) e.getSource());
+            destY = GridPane.getRowIndex((Node) e.getSource());
+
+            availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+            // System.out.println(sourceX + " " + sourceY + " " + destX + " " + destY);
+
+            boolean moveIsValid = isMoveValid(availableMoves, sourceX, sourceY, destX, destY);
+
+            if(moveIsValid) {
+
+                stackPane.getChildren().setAll(movingPiece); // mouvement de la pièce visuellement
+
+                try {
+                    plateau.movement(sourceX, sourceY, destX, destY);
+                    // plateau.showGrid();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+
+            // dans tous les cas on remet les couleurs comme avant
+            String sourceColor = ((sourceX + sourceY) % 2 == 0) ? "beige" : "lightgreen";
+            firstClickedPane.setStyle("-fx-background-color: " + sourceColor + "; -fx-border-color: black");
+
+            firstClickedPane = null;
+            stopShowingAvailableMoves(availableMoves);
+            availableMoves.clear();
+
+            clickNumber = 0;
+
         }
     }
 
-    public void onClick(int x, int y){
-        System.out.println("clic sur " + x + ", " + y);
+    /**
+     * Vérifie si le mouvement fourni est valide
+     * @param availableMoves liste des mouvements possible de la pièce
+     * @param oldX X source
+     * @param oldY Y source
+     * @param newX X destination
+     * @param newY Y destination
+     * @return Booléen
+     */
+    public boolean isMoveValid(List<Tuple> availableMoves, int oldX, int oldY, int newX, int newY) {
+        Piece destinationPiece = plateau.getPiece(newX, newY);
+        Piece sourcePiece = plateau.getPiece(oldX, oldY);
+
+        if (destinationPiece != null && destinationPiece.getColor() == sourcePiece.getColor()) return false;
+
+        for (Tuple tuple : availableMoves) {
+            Tuple newCoords = new Tuple(newX, newY);
+            if (tuple.equals(newCoords)) return true;
+        }
+        return false;
     }
 
+    /**
+     * Commence l'affichage des mouvements possibles
+     * @param availableMoves liste des mouvements possibles
+     */
+    public void showAvailableMoves(List<Tuple> availableMoves) {
+        int x, y;
+        for (Tuple coords : availableMoves) {
+            x = (int) coords.getFirst();
+            y = (int) coords.getSecond();
+            cases[x][y].setStyle("-fx-background-color: red; -fx-border-color: black");
+        }
+    }
+
+    /**
+     * Arrête l'affichage des mouvements possibles
+     * @param availableMoves liste des mouvements possibles
+     */
+    public void stopShowingAvailableMoves(List<Tuple> availableMoves) {
+        int x, y;
+        String color;
+        for (Tuple coords : availableMoves) {
+            x = (int) coords.getFirst();
+            y = (int) coords.getSecond();
+            color = ((x + y) % 2 == 0) ? "beige" : "lightgreen";
+            cases[x][y].setStyle("-fx-background-color: " + color + "; -fx-border-color: black");
+        }
+    }
 }
