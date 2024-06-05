@@ -1,9 +1,13 @@
 package com.chessapp.chessapp.model;
 
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.util.Pair;
+import java.util.List;
 
+
+/**
+ * Classe abstraite Piece, extension d'ImageView, qui sera utilisée pour chaque pièce du jeu d'èchecs.
+ * La couleur est représentée par un int : -1 pour les noirs, 1 pour les blancs
+ */
 public abstract class Piece extends ImageView {
 
     private int xTab;
@@ -66,10 +70,20 @@ public abstract class Piece extends ImageView {
     public abstract List<Tuple> calculateMovements(Plateau plateau);
 
 
-    /*
-        Fonction abstraite calculateMovements()
-        Renvoie une liste de coordonnées où la pièce peut se déplacer
+    /**
+     * Vérifie si les coordonnées du mouvement fourni est un mouvement valide pour la pièce
+     * @param x X cible
+     * @param y Y cible
+     * @param plateau Plateau sur lequel vérifier le mouvement
+     * @return booléen, si le mouvement est valide ou non
      */
-    abstract Pair<Integer, Integer>[] calculateMovements();
+    public boolean isValidMovement(int x, int y, Plateau plateau) {
+        Tuple destinationCoords = new Tuple(x, y);
 
+        for(Tuple coords : this.calculateMovements(plateau)) {
+            if (destinationCoords.equals(coords)) return true;
+        }
+
+        return false;
+    }
 }
