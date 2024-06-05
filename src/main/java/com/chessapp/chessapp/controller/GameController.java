@@ -1,15 +1,25 @@
 package com.chessapp.chessapp.controller;
 
+import com.chessapp.chessapp.model.*;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
@@ -17,87 +27,83 @@ import javafx.scene.paint.Color;
  */
 public class GameController {
 
-    @FXML
-    private ImageView draggedIv;
+    private Piece movingPiece;
     @FXML
     private GridPane grid;
-    private static Image bishopB = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_b.png");
-    private static Image bishopW = new Image("file:src/main/resources/com/chessapp/chessapp/img/bishop_w.png");
-    private static Image empty = new Image("file:src/main/resources/com/chessapp/chessapp/img/empty.png");
-    private VBox[][] vBoxes;
+
+    private StackPane[][] cases;
+    private Plateau plateau;
+
+    private int clickNumber;
+    private StackPane firstClickedPane;
+
+    private int sourceX, sourceY;
+    private int destX, destY;
 
     /**
      * Initialisation
      *
      */
     @FXML
-    public void initialize() {
-        ImageView iv = new ImageView();
-        iv.setImage(bishopB);
-        vBoxes = new VBox[8][8];
+    public void initialize() throws Exception {
+        cases = new StackPane[8][8];
+        plateau = new Plateau();
 
-        for(int j = 0; j < 8; j++) {
-            for(int i = 0; i < 8; i++) {
-                VBox vbox = new VBox();
-                vbox.setStyle("-fx-border-style: solid; -fx-background-color: beige");
-                ImageView imageView = new ImageView((i == 0 && j % 2 == 0) ? bishopB : empty);
+        clickNumber = 0;
 
-                imageView.setOnDragDetected(event -> {
-                    Dragboard db = imageView.startDragAndDrop(TransferMode.ANY);
+        for(int j = 0; j < 8; ++j) {
+            for (int i = 0; i < 8; i++) {
 
-                    draggedIv = imageView;
+                StackPane stackPane = new StackPane();
 
-                    ClipboardContent content = new ClipboardContent();
-                    content.putImage(imageView.getImage());
-                    db.setContent(content);
+                stackPane.setStyle("-fx-background-color: beige; -fx-border-color: black");
 
-                    event.consume();
-                });
+                Piece piece = ((j + i) % 2 == 1 && j < 2) ? new Pion(i, j, -1) : null;
 
-                imageView.setOnDragOver(event -> {
-                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                        imageView.getParent().setStyle("-fx-border-color: red; -fx-background-color: beige");
+                if(piece != null) {
+                    plateau.addPiece(i, j, piece);
+                    stackPane.getChildren().add(piece);
+                }
+
+                stackPane.setOnMouseClicked(e -> {
+                    if (clickNumber == 0 && stackPane.getChildren().size() > 0) {
+                        movingPiece = (Piece) stackPane.getChildren().get(0);
+                        stackPane.setStyle("-fx-background-color: green; -fx-border-color: black");
+                        firstClickedPane = stackPane;
+                        clickNumber = 1;
+                        sourceX = GridPane.getColumnIndex((Node) e.getSource());
+                        sourceY = GridPane.getRowIndex((Node) e.getSource());
                     }
+                    else if (clickNumber == 1) {
+                        destX = GridPane.getColumnIndex((Node) e.getSource());
+                        destY = GridPane.getRowIndex((Node) e.getSource());
 
-                    event.consume();
-                });
+                        if(plateau.getPiece(destX, destY) == null
+                                || plateau.getPiece(destX, destY).getColor() != movingPiece.getColor()) {
 
-                imageView.setOnDragExited(event -> {
-                    if(event.getGestureSource() != imageView && event.getDragboard().hasImage()) {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                        imageView.getParent().setStyle("-fx-border-color: black; -fx-background-color: beige");
+
+                            stackPane.getChildren().setAll(movingPiece);
+                            firstClickedPane.setStyle("-fx-background-color: beige; -fx-border-color: black");
+                            try {
+                                System.out.println(sourceX + sourceY + destX + destY + "/");
+                                plateau.movement(sourceX, sourceY, destX, destY);
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            clickNumber = 0;
+                        }
+
+
                     }
-
-                    event.consume();
-
                 });
 
-                imageView.setOnDragDropped(event -> {
-                    Dragboard db = event.getDragboard();
-
-                    imageView.setImage(db.getImage());
-                    draggedIv.setImage(empty);
-
-                    event.consume();
-                });
-
-                imageView.setOnDragDone(event -> {
-                    draggedIv = null;
-                    event.consume();
-                });
-
-                vbox.setAlignment(Pos.CENTER);
-
-                vbox.getChildren().add(imageView);
-                vBoxes[i][j] = vbox;
-                grid.add(vbox, i, j);
+                grid.add(stackPane, i, j);
             }
         }
+
     }
 
-    public void onClick(int x, int y){
-        System.out.println("clic sur " + x + ", " + y);
-    }
+    public void onMouseClicked(StackPane stackPane, int x, int y) {
 
+    }
 }
