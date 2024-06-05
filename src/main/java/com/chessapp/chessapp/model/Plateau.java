@@ -31,19 +31,44 @@ public class Plateau {
         }
     }
 
-    public void addPiece(int x, int y, char pawnType, int color) throws Exception {
+    public void addPiece(int x, int y, char pieceType, int color) throws Exception {
+        if (!isInBounds(x, y)) {
+            throw new Exception("ERREUR Plateau.addPiece() : coordonnées hors limites");
+        }
         if (plateau[y][x] != null) {
-            throw new Exception("ERREUR Plateau.addPawn() : case non vide");
+            throw new Exception("ERREUR Plateau.addPiece() : case non vide");
         }
 
         try {
-            Piece pion = new Pion(x, y, pawnType, color, this);
-            plateau[y][x] = pion;
+            Piece piece;
+            switch (pieceType) {
+                case 'P':
+                    piece = new Pion(x, y, pieceType, color, this);
+                    break;
+                case 'R':
+                    piece = new Tour(x, y, pieceType, color, this);
+                    break;
+                case 'B':
+                    piece = new Fou(x, y, pieceType, color, this);
+                    break;
+                case 'K':
+                    piece = new Roi(x, y, pieceType, color, this);
+                    break;
+                case 'Q':
+                    piece = new Reine(x, y, pieceType, color, this);
+                    break;
+                case 'N':
+                    piece = new Cavalier(x, y, pieceType, color, this);
+                    break;
+                default:
+                    throw new Exception("Type de pièce non valide");
+            }
+            plateau[y][x] = piece;
         } catch (Exception e) {
             System.out.printf(e.getMessage());
         }
-
     }
+
 
     public void showGrid() {
         for (Piece[] liste : plateau) {
@@ -74,5 +99,9 @@ public class Plateau {
     public boolean isTeamPiece(int x, int y, int color) {
         Piece piece = plateau[y][x];
         return piece != null && piece.getColor() == color;
+    }
+
+    private boolean isInBounds(int x, int y) {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 }

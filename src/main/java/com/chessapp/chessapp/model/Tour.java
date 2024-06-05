@@ -12,66 +12,74 @@ public class Tour extends Piece {
 
     @Override
     public List<Pair<Integer, Integer>> calculateMovements() {
+
         int x = this.getCoordX();
         int y = this.getCoordY();
         int color = this.getColor();
         Plateau plateau = this.getPlateau();
         List<Pair<Integer, Integer>> movements = new ArrayList<>();
+        int mouvement;
 
-        System.out.println("Position initiale de la Tour: (" + x + ", " + y + ")");
-
-        // Mouvement vertical vers le haut
-        for (int i = y - 1; i >= 0; i--) {
-            System.out.println("Vérification de la case: (" + x + ", " + i + ")");
-            if (plateau.isEmpty(x, i)) {
-                movements.add(new Pair<>(x, i));
-            } else {
-                if (plateau.isEnemyPiece(x, i, color)) {
-                    movements.add(new Pair<>(x, i));
-                }
+        // mouvement droite
+        mouvement = 1;
+        while (isInBounds(x + mouvement, y)) {
+            if (plateau.isEmpty(x + mouvement, y)) {
+                movements.add(new Pair<>(x + mouvement, y));
+            } else if (plateau.isEnemyPiece(x + mouvement, y, color)) {
+                movements.add(new Pair<>(x + mouvement, y));
+                break;
+            } else if (plateau.isTeamPiece(x + mouvement, y, color)) {
                 break;
             }
+            mouvement += 1;
         }
 
-        // Mouvement vertical vers le bas
-        for (int i = y + 1; i < 8; i++) {
-            System.out.println("Vérification de la case: (" + x + ", " + i + ")");
-            if (plateau.isEmpty(x, i)) {
-                movements.add(new Pair<>(x, i));
-            } else {
-                if (plateau.isEnemyPiece(x, i, color)) {
-                    movements.add(new Pair<>(x, i));
-                }
+        // mouvement gauche
+        mouvement = 1;
+        while (isInBounds(x - mouvement, y)) {
+            if (plateau.isEmpty(x - mouvement, y)) {
+                movements.add(new Pair<>(x - mouvement, y));
+            } else if (plateau.isEnemyPiece(x - mouvement, y, color)) {
+                movements.add(new Pair<>(x - mouvement, y));
+                break;
+            } else if (plateau.isTeamPiece(x - mouvement, y, color)) {
                 break;
             }
+            mouvement += 1;
         }
 
-        // Mouvement horizontal vers la gauche
-        for (int i = x - 1; i >= 0; i--) {
-            System.out.println("Vérification de la case: (" + i + ", " + y + ")");
-            if (plateau.isEmpty(i, y)) {
-                movements.add(new Pair<>(i, y));
-            } else {
-                if (plateau.isEnemyPiece(i, y, color)) {
-                    movements.add(new Pair<>(i, y));
-                }
+        // mouvement haut
+        mouvement = 1;
+        while (isInBounds(x, y + mouvement)) {
+            if (plateau.isEmpty(x, y + mouvement)) {
+                movements.add(new Pair<>(x, y + mouvement));
+            } else if (plateau.isEnemyPiece(x, y + mouvement, color)) {
+                movements.add(new Pair<>(x, y + mouvement));
+                break;
+            } else if (plateau.isTeamPiece(x, y + mouvement, color)) {
                 break;
             }
+            mouvement += 1;
         }
 
-        // Mouvement horizontal vers la droite
-        for (int i = x + 1; i < 8; i++) {
-            System.out.println("Vérification de la case: (" + i + ", " + y + ")");
-            if (plateau.isEmpty(i, y)) {
-                movements.add(new Pair<>(i, y));
-            } else {
-                if (plateau.isEnemyPiece(i, y, color)) {
-                    movements.add(new Pair<>(i, y));
-                }
+        // mouvement bas
+        mouvement = 1;
+        while (isInBounds(x, y - mouvement)) {
+            if (plateau.isEmpty(x, y - mouvement)) {
+                movements.add(new Pair<>(x, y - mouvement));
+            } else if (plateau.isEnemyPiece(x, y - mouvement, color)) {
+                movements.add(new Pair<>(x, y - mouvement));
+                break;
+            } else if (plateau.isTeamPiece(x, y - mouvement, color)) {
                 break;
             }
+            mouvement += 1;
         }
 
         return movements;
+    }
+
+    private boolean isInBounds(int x, int y) {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
 }
