@@ -48,11 +48,28 @@ public abstract class Piece extends ImageView {
         return yTab;
     }
 
-    /*
-    Fonction abstraite calculateMovements()
-    Renvoie une liste de coordonnées où la pièce peut se déplacer
-     */
-    public abstract List<Tuple> calculateMovements();
+    public void setxTab(int xTab) {
+        this.xTab = xTab;
+    }
 
-    public abstract boolean isValidMovement(int x, int y);
+    public void setyTab(int yTab) {
+        this.yTab = yTab;
+    }
+
+    /**
+     * Calcule tous les mouvements possible de la pièce
+     * @param plateau plateau sur lequel donner les mouvements possibles
+     * @return La liste de tous les mouvements possible de la pièce
+     */
+    public abstract List<Tuple> calculateMovements(Plateau plateau);
+
+
+    /**
+     * Vérifie si les coordonnées du mouvement fourni est un mouvement valide pour la pièce
+     * @param x X cible
+     * @param y Y cible
+     * @param plateau Plateau sur lequel vérifier le mouvement
+     * @return booléen, si le mouvement est valide ou non
+     */
+    public abstract boolean isValidMovement(int x, int y, Plateau plateau);
 }

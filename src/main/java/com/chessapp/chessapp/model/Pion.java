@@ -5,9 +5,8 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-    Classe pion
-    Le pion de base sur un plateau d'échecs
+/**
+ * Classe Pion, extension de Piece, qui symbolise le pion de base des échecs
  */
 public class Pion extends Piece {
 
@@ -25,28 +24,49 @@ public class Pion extends Piece {
         }
     }
 
-    /**
-     * Calcule les mouvements possibles de la pièce
-     * @return Liste de tuple de mouvements possibles
-     */
     @Override
-    public List<Tuple> calculateMovements(){
+    public List<Tuple> calculateMovements(Plateau plateau){
         ArrayList<Tuple> availableMovements = new ArrayList<>();
+        
+        int x, y, color;
+        
+        x = super.getxTab();
+        y = super.getyTab();
+        color = super.getColor();
+        
+        int direction = color * -1;
 
-        if(super.getColor() == 1) {
-            availableMovements.add(new Tuple(super.getxTab() + 1, super.getyTab() + 1));
-            availableMovements.add(new Tuple(super.getxTab() + 2, super.getyTab() + 2));
+        if (color == -1 && y == 1 || color == 1 && y == 6 && plateau.getPiece(x, y + 2 * direction) == null) { // déplacement initial double
+            availableMovements.add(new Tuple(x, y + 2*direction));
+        }
+        if (y + direction >= 0 && y + direction < 8 && plateau.getPiece(x, y + direction) == null) { // déplacement tout droit
+            availableMovements.add(new Tuple(x, y + direction));
+        }
+
+        if (x - 1 >= 0 && y + direction >= 0 && y + direction < 8 // si la diagonale avant gauche ne dépasse pas le tableau
+                && plateau.getPiece(x - 1, y + direction) != null // et qu'il y a une pièce à l'avant gauche
+                && plateau.getPiece(x - 1, y + direction).getColor() != color) { // et que sa couleur est différente
+            availableMovements.add(new Tuple(x - 1, y + direction));
+        }
+
+        if (x + 1 < 8 && y + direction >= 0 && y + direction < 8 // si la diagonale avant droite ne dépasse pas
+                && plateau.getPiece(x + 1, y + direction) != null // et qu'il y a une pièce
+                && plateau.getPiece(x + 1, y + direction).getColor() != super.getColor()) { // et que sa couleur est différente
+            availableMovements.add(new Tuple(x + 1, y + direction));
         }
 
         return availableMovements;
     }
 
+
     @Override
-    public boolean isValidMovement(int x, int y) {
+    public boolean isValidMovement(int x, int y, Plateau plateau) {
         Tuple destinationCoords = new Tuple(x, y);
-        for(Tuple coords : this.calculateMovements()) {
+
+        for(Tuple coords : this.calculateMovements(plateau)) {
             if (destinationCoords.equals(coords)) return true;
         }
+
         return false;
     }
 }

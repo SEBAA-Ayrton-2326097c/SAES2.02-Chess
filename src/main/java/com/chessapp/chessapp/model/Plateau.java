@@ -26,8 +26,13 @@ public class Plateau {
             throw new Exception("ERREUR Plateau.movement() : case source vide");
         }
 
-        plateau[newY][newX] = plateau[oldX][oldY];
+        plateau[newY][newX] = plateau[oldY][oldX];
         plateau[oldY][oldX] = null;
+
+        plateau[newY][newX].setxTab(newX);
+        plateau[newY][newX].setyTab(newY);
+
+
     }
 
     public Piece getPiece(int x, int y){

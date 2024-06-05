@@ -32,6 +32,11 @@ public class Tuple {
         if (obj == null || this.getClass() != obj.getClass()) return false;
 
         Tuple compared = (Tuple) obj;
-        return (this.first == compared.first && this.second == compared.second);
+        return (this.first.equals(compared.first) && this.second.equals(compared.second));
+    }
+
+    @Override
+    public String toString() {
+        return "Tuple [first=" + first + ", second=" + second + "]";
     }
 }
