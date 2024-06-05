@@ -1,25 +1,25 @@
 package com.chessapp.chessapp.model;
 
-/*
-    Classe Plateau
-    Initialise le plateau de 8*8 cases où se déplaceront les pions
+/**
+ * La matrice 8x8 de jeu où la partie se déroule.
  */
 public class Plateau {
     private Piece[][] plateau;
 
-    /*
-        Constructeur Plateau();
-        Initialise la liste de liste
+    /**
+     * Constructeur plateau
      */
     public Plateau() {
         plateau = new Piece[8][8];
     }
 
-    /*
-        Fonction movement()
-        Prend en argument des coordonnées de deux cases, déplace le contenu de la première dans la deuxième,
-        puis vide la première.
-        Si la première case est vide, renvoie une erreur
+    /**
+     * Initie le déplacement d'un pion à une autre case. Ne vérifie pas si le mouvement est valide
+     * @param oldX X source
+     * @param oldY Y source
+     * @param newX X destination
+     * @param newY Y destination
+     * @throws Exception Renvoie une erreur si la case source est vide
      */
     public void movement(int oldX, int oldY, int newX, int newY) throws Exception {
         if(plateau[oldY][oldX] == null) {
@@ -39,10 +39,12 @@ public class Plateau {
         return plateau[y][x];
     }
 
-    /*
-        Fonction addPawn()
-        Prend en argument des coordonnées et un type de pion (nombre) et le place aux coordonnées
-        Si la case n'est pas vide, renvoie une erreur
+    /**
+     * Ajoute l'objet Piece fourni dans la matrice aux coordonnées précisées
+     * @param x coordonnée x
+     * @param y coordonnée y
+     * @param piece objet piece
+     * @throws Exception renvoie une erreur si la case n'est pas vide
      */
     public void addPiece(int x, int y, Piece piece) throws Exception {
         if (plateau[y][x] != null) {
@@ -52,9 +54,8 @@ public class Plateau {
         plateau[y][x] = piece;
     }
 
-    /*
-        Fonction showGrid()
-        Montre la grille dans la console, utile pour debug
+    /**
+     * Affiche la grille dans la console, utile pour le debug
      */
     public void showGrid() {
 
@@ -67,9 +68,9 @@ public class Plateau {
 
     }
 
-    /*
-        Fonction setGrid()
-        Change toute la grille manuellement, utile pour les tests
+    /**
+     * Remplace toute la matrice plateau par une autre manuellement
+     * @param newPlateau matrice plateau de remplacement
      */
     public void setGrid(Piece[][] newPlateau) {
         this.plateau = newPlateau;
