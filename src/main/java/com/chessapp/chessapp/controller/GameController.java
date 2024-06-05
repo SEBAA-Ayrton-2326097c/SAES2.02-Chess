@@ -48,24 +48,7 @@ public class GameController {
                 String squareColor = ((i + j) % 2 == 0) ? "beige" : "lightgreen";
                 stackPane.setStyle("-fx-background-color: " + squareColor + "; -fx-border-color: black");
 
-                Piece piece = null;
-
-                if (j == 1) piece = new Pion(i, j, -1);
-                else if (j == 6) piece = new Pion(i, j, 1);
-
-
-                // TODO : chaque classe pour chaque pièce
-                /*if (j == 0 || j == 7) {
-                    int color = (j == 0) ? 1 : 0; // 1 pour noir, 0 pour blanc
-
-                    piece = switch (i) {
-                        case 0, 7 -> new Tour(i, j, color);
-                        case 1, 6 -> new Cavalier(i, j, color);
-                        case 2, 5 -> new Fou(i, j, color);
-                        case 3 -> (color == 1) ? new Reine(i, j, color) : new Roi(i, j, color);
-                        case 4 -> (color == 1) ? new Roi(i, j, color) : new Reine(i, j, color);
-                        default -> piece;
-                    };*/
+                Piece piece = getPiece(j, i);
 
                 if(piece != null) {
                     plateau.addPiece(i, j, piece);
@@ -81,6 +64,34 @@ public class GameController {
             }
         }
 
+    }
+
+    /**
+     * Donne la pièce correspondante à une case donnée au début de la partie
+     * @param x coordonnée X
+     * @param y coordonnée Y
+     * @return la pièce correspondante à la case
+     * @throws Exception si x, y invalides
+     */
+    private static Piece getPiece(int y, int x) throws Exception {
+        Piece piece = null;
+
+        if (y == 1) piece = new Pawn(x, y, -1);
+        else if (y == 6) piece = new Pawn(x, y, 1);
+
+        if (y == 0 || y == 7) {
+            int color = (y == 0) ? -1 : 1;
+
+            piece = switch (x) {
+                case 0, 7 -> new Rook(x, y, color);
+                case 1, 6 -> new Knight(x, y, color);
+                case 2, 5 -> new Bishop(x, y, color);
+                case 3 -> (color == 1) ? new Queen(x, y, color) : new King(x, y, color);
+                case 4 -> (color == 1) ? new King(x, y, color) : new Queen(x, y, color);
+                default -> piece;
+            };
+        }
+        return piece;
     }
 
     /**

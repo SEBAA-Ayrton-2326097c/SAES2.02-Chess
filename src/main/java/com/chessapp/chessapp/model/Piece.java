@@ -1,11 +1,13 @@
 package com.chessapp.chessapp.model;
 
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.util.Pair;
-
 import java.util.List;
 
+
+/**
+ * Classe abstraite Piece, extension d'ImageView, qui sera utilisée pour chaque pièce du jeu d'èchecs.
+ * La couleur est représentée par un int : -1 pour les noirs, 1 pour les blancs
+ */
 public abstract class Piece extends ImageView {
 
     private int xTab;
@@ -14,9 +16,13 @@ public abstract class Piece extends ImageView {
     private int color;
 
 
-    /*
-        Constructeur Pion()
-        Prend des coordonnées de base, et une couleur
+    /**
+     * Constructeur d'une pièce, initialise les paramètres de base
+     * @param xTab coordonnée d'apparition en X
+     * @param yTab coordonnée d'apparition en Y
+     * @param pieceType String du type de pièce (pawn, knight, ..)
+     * @param color couleur de la pièce (-1 / 1)
+     * @throws Exception Erreur si couleur non valide
      */
     public Piece(int xTab, int yTab, String pieceType, int color) throws Exception{
         if (color != 1 && color != -1) {
@@ -71,5 +77,13 @@ public abstract class Piece extends ImageView {
      * @param plateau Plateau sur lequel vérifier le mouvement
      * @return booléen, si le mouvement est valide ou non
      */
-    public abstract boolean isValidMovement(int x, int y, Plateau plateau);
+    public boolean isValidMovement(int x, int y, Plateau plateau) {
+        Tuple destinationCoords = new Tuple(x, y);
+
+        for(Tuple coords : this.calculateMovements(plateau)) {
+            if (destinationCoords.equals(coords)) return true;
+        }
+
+        return false;
+    }
 }

@@ -6,21 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe Pion, extension de Piece, qui symbolise le pion de base des échecs
+ * Classe Pion, extension de Piece, représente le pion de base des échecs
  */
-public class Pion extends Piece {
+public class Pawn extends Piece {
 
-    public static Image imgPionBlanc = new Image("file:src/main/resources/com/chessapp/chessapp/img/pawn_w.png");
-    public static Image imgPionNoir = new Image("file:src/main/resources/com/chessapp/chessapp/img/pawn_b.png");
+    public static Image pawn_w = new Image("file:src/main/resources/com/chessapp/chessapp/img/pawn_w.png");
+    public static Image pawn_b = new Image("file:src/main/resources/com/chessapp/chessapp/img/pawn_b.png");
 
-
-    public Pion(int xTab, int yTab, int color) throws Exception {
+    public Pawn(int xTab, int yTab, int color) throws Exception {
         super(xTab, yTab, "pawn", color);
 
         if (color == -1) {
-            super.setImage(imgPionNoir);
+            super.setImage(pawn_b);
         } else if (color == 1) {
-            super.setImage(imgPionBlanc);
+            super.setImage(pawn_w);
         }
     }
 
@@ -36,11 +35,11 @@ public class Pion extends Piece {
         
         int direction = color * -1;
 
-        if (color == -1 && y == 1 || color == 1 && y == 6 && plateau.getPiece(x, y + 2 * direction) == null) { // déplacement initial double
-            availableMovements.add(new Tuple(x, y + 2*direction));
-        }
         if (y + direction >= 0 && y + direction < 8 && plateau.getPiece(x, y + direction) == null) { // déplacement tout droit
             availableMovements.add(new Tuple(x, y + direction));
+            if (color == -1 && y == 1 || color == 1 && y == 6 && plateau.getPiece(x, y + 2 * direction) == null) { // déplacement initial double
+                availableMovements.add(new Tuple(x, y + 2*direction));
+            }
         }
 
         if (x - 1 >= 0 && y + direction >= 0 && y + direction < 8 // si la diagonale avant gauche ne dépasse pas le tableau
@@ -59,14 +58,4 @@ public class Pion extends Piece {
     }
 
 
-    @Override
-    public boolean isValidMovement(int x, int y, Plateau plateau) {
-        Tuple destinationCoords = new Tuple(x, y);
-
-        for(Tuple coords : this.calculateMovements(plateau)) {
-            if (destinationCoords.equals(coords)) return true;
-        }
-
-        return false;
-    }
 }
