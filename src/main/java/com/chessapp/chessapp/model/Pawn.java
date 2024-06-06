@@ -37,9 +37,11 @@ public class Pawn extends Piece {
 
         if (y + direction >= 0 && y + direction < 8 && plateau.getPiece(x, y + direction) == null) { // déplacement tout droit
             availableMovements.add(new Tuple(x, y + direction));
-            if (color == -1 && y == 1 || color == 1 && y == 6 && plateau.getPiece(x, y + 2 * direction) == null) { // déplacement initial double
-                availableMovements.add(new Tuple(x, y + 2*direction));
-            }
+            if (color == -1 && y == 1 && plateau.getPiece(x, y + 2 * direction) == null || color == 1 && y == 6 && plateau.getPiece(x, y + 2 * direction) == null){
+
+                    availableMovements.add(new Tuple(x, y + 2 * direction));
+                }
+
         }
 
         if (x - 1 >= 0 && y + direction >= 0 && y + direction < 8 // si la diagonale avant gauche ne dépasse pas le tableau
