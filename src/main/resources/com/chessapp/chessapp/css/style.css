@@ -1,0 +1,49 @@
+
+/*
+ids personnalisés
+*/
+
+#gameVbox {
+    -fx-background-color: grey;
+}
+
+#playText {
+    -fx-text-fill: lightgreen;
+    -fx-font-size: 30px;
+}
+
+#playButton {
+    -fx-text-fill: #262522;
+    -fx-font-size: 15px;
+    -fx-background-color: lightgreen;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, lightgreen, 10, 0, 0, 1);
+}
+
+#labelPlayer {
+    -fx-text-fill: black;
+    -fx-font-size: 15px;
+}
+
+.tab:selected {
+    -fx-background-color: #262522;
+}
+.tab-pane {
+    -fx-background-color: #262522;
+}
+
+*.tab-header-area {
+    -fx-background-color: black;
+}
+
+.tab-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.tab {
+    -fx-alignment: CENTER;
+    -fx-background-color: #21201D;
+    -fx-padding: 15;
+    -fx-text-fill: white;
+}
