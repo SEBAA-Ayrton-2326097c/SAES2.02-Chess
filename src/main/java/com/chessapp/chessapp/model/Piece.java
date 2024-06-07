@@ -86,4 +86,5 @@ public abstract class Piece extends ImageView {
 
         return false;
     }
+
 }

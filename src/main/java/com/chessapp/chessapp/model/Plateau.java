@@ -55,6 +55,19 @@ public class Plateau {
     }
 
     /**
+     * Ajoute l'objet Piece fourni dans la matrice aux coordonnées de cette pièce
+     * @param piece objet piece
+     * @throws Exception renvoie une erreur si la case n'est pas vide
+     */
+    public void addPiece(Piece piece) throws Exception {
+        if (plateau != null) {
+            throw new Exception("ERREUR Plateau.addPawn() : case non vide");
+        }
+
+        plateau[piece.getyTab()][piece.getxTab()] = piece;
+    }
+
+    /**
      * Affiche la grille dans la console, utile pour le debug
      */
     public void showGrid() {

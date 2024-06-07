@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,18 +28,28 @@ public class GameController {
     private int clickNumber;
     private StackPane firstClickedPane;
 
+
+    private int currentTurnColor;
+    private List<Piece> blackPieces;
+    private List<Piece> whitePieces;
+    private King whiteKing;
+    private King blackKing;
+
+
     int sourceX, sourceY, destX, destY;
 
     /**
      * Initialisation de la matrice de stackPanes, du plateau de jeu, et des events pour chaque case
-     *
      */
     @FXML
     public void initialize() throws Exception {
         cases = new StackPane[8][8];
         plateau = new Plateau();
-
         clickNumber = 0;
+        currentTurnColor = 1;
+
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
 
         for(int j = 0; j < 8; ++j) {
             for (int i = 0; i < 8; i++) {
@@ -50,9 +61,17 @@ public class GameController {
 
                 Piece piece = getPiece(j, i);
 
+
                 if(piece != null) {
                     plateau.addPiece(i, j, piece);
                     stackPane.getChildren().add(piece);
+                    if (piece.getColor() == 1) {
+                        if(piece.getPieceType() == "king") whiteKing = (King) piece;
+                        whitePieces.add(piece);
+                    } else {
+                        if(piece.getPieceType() == "king") blackKing = (King) piece;
+                        blackPieces.add(piece);
+                    }
                 }
 
                 stackPane.setOnMouseClicked(e -> {
@@ -102,22 +121,58 @@ public class GameController {
     public void onMouseClicked(Event e, StackPane stackPane) {
 
         List<Tuple> availableMoves;
+        King currentKing, enemyKing;
 
-        if (clickNumber == 0 && !stackPane.getChildren().isEmpty()) {
-            movingPiece = (Piece) stackPane.getChildren().get(0);
-            stackPane.setStyle("-fx-background-color: green; -fx-border-color: black");
-            firstClickedPane = stackPane;
-            clickNumber = 1;
-            sourceX = GridPane.getColumnIndex((Node) e.getSource());
-            sourceY = GridPane.getRowIndex((Node) e.getSource());
+        if (currentTurnColor == -1) {
+            currentKing = blackKing;
+            enemyKing = whiteKing;
+        } else {
+            currentKing = whiteKing;
+            enemyKing = blackKing;
+        }
 
-            availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+        if (clickNumber == 0 && !stackPane.getChildren().isEmpty()) { // si c'est le premier clic, sur une case non vide, on initie le mouvement
 
-            showAvailableMoves(availableMoves);
+            movingPiece = (Piece) stackPane.getChildren().get(0); // pièce qui doit être bougée
+
+            if (isAttacked(currentKing)) { // si le roi est attaqué
+                if(!canMove(currentKing)) {
+                    endGame(currentTurnColor * -1);
+                    return;
+                }
+
+                if (!movingPiece.equals(currentKing)) return;
+            }
+
+            if (movingPiece.getColor() == currentTurnColor) {
+                stackPane.setStyle("-fx-background-color: green; -fx-border-color: black");
+                firstClickedPane = stackPane;
+                clickNumber = 1;
+                sourceX = GridPane.getColumnIndex((Node) e.getSource());
+                sourceY = GridPane.getRowIndex((Node) e.getSource());
+
+                if(!movingPiece.equals(currentKing))
+                    availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+                else {
+                    availableMoves = currentKing.calculateMovements(plateau);
+                    List<Piece> enemyTeam = (currentTurnColor == -1) ? whitePieces : blackPieces;
+
+                    for (Piece p : enemyTeam) {
+                        for (Tuple enemyMove : p.calculateMovements(plateau)) {
+                            for (Tuple pieceMove : availableMoves) {
+                                if(pieceMove.equals(enemyMove)) availableMoves.remove(pieceMove);
+                            }
+                        }
+                    }
+
+                }
+                showAvailableMoves(availableMoves);
+            }
             // System.out.println(availableMoves);
 
         }
         else if (clickNumber == 1) {
+
             destX = GridPane.getColumnIndex((Node) e.getSource());
             destY = GridPane.getRowIndex((Node) e.getSource());
 
@@ -130,6 +185,12 @@ public class GameController {
 
                 stackPane.getChildren().setAll(movingPiece); // mouvement de la pièce visuellement
 
+                if(plateau.getPiece(destX, destY) != null) {
+                    if (plateau.getPiece(destX, destY).equals(enemyKing)) {
+                        System.out.println("partie terminée, victoire des " + ((currentTurnColor == -1) ? "noirs" : "blancs"));
+                    }
+                }
+
                 try {
                     plateau.movement(sourceX, sourceY, destX, destY);
                     // plateau.showGrid();
@@ -137,6 +198,7 @@ public class GameController {
                     throw new RuntimeException(ex);
                 }
 
+                currentTurnColor = currentTurnColor * -1;
             }
 
             // dans tous les cas on remet les couleurs comme avant
@@ -200,5 +262,36 @@ public class GameController {
             color = ((x + y) % 2 == 0) ? "beige" : "lightgreen";
             cases[x][y].setStyle("-fx-background-color: " + color + "; -fx-border-color: black");
         }
+    }
+
+    /**
+     * renvoie true si la pièce fournie est attaquée par une autre
+     * @param piece pièce potentiellement attaquée
+     * @return
+     */
+    public boolean isAttacked(Piece piece) {
+        Tuple pieceCoords = new Tuple(piece.getxTab(), piece.getyTab());
+        List<Piece> enemyTeam = (piece.getColor() == -1) ? whitePieces : blackPieces;
+
+        for(Piece p : enemyTeam) {
+            for(Tuple move : p.calculateMovements(plateau)) {
+                if (move.equals(pieceCoords)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * renvoie true si la pièce fournie a un déplacement possible
+     * @param piece pièce à vérifier
+     * @return
+     */
+    public boolean canMove(Piece piece){
+        return piece.calculateMovements(plateau).isEmpty();
+    }
+
+    public void endGame(int winner) {
+        System.out.println("victoire " + winner);
     }
 }
