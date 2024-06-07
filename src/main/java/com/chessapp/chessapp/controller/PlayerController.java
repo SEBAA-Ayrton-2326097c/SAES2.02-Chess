@@ -35,8 +35,8 @@ public class PlayerController {
             File file = new File(filePath);
             if (file.createNewFile()) {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                    writer.write("\"pseudo\",nb_parties,nb_victoires,nb_egalite,nb_defaite\n");
-                    writer.write(pseudo + ",0,0,0,0\n");
+                    writer.write("\"pseudo\",nb_parties,nb_victoires,nb_defaite\n");
+                    writer.write(pseudo + ",0,0,0\n");
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw new IOException("Erreur lors de l'écriture dans le fichier " + pseudo + ".csv", e);
@@ -47,16 +47,6 @@ public class PlayerController {
         }
     }
 
-    /**
-     * Méthode pour démarrer une partie entre deux joueurs qui va ajouter 1 aux nb_parties et nb_egalite pour les 2 joueurs
-     * @param pseudo1 Nom du premier joueur
-     * @param pseudo2 Nom du deuxième joueur
-     * @throws IOException En cas d'erreur lors de la lecture ou de l'écriture dans le fichier
-     */
-    public void debutPartie(String pseudo1, String pseudo2) throws IOException {
-        modifierStats(pseudo1, 1, 0, 1, 0);
-        modifierStats(pseudo2, 1, 0, 1, 0);
-    }
 
     /**
      * Méthode pour finir une partie entre deux joueurs qui va enlever 1 a nb_egalite pour les 2 joueurs
@@ -66,8 +56,8 @@ public class PlayerController {
      * @throws IOException En cas d'erreur lors de la lecture ou de l'écriture dans le fichier
      */
     public void finPartie(String gagnant, String perdant) throws IOException {
-        modifierStats(gagnant, 0, 1, -1, 0);
-        modifierStats(perdant, 0, 0, -1, 1);
+        modifierStats(gagnant, 0, 1,  0);
+        modifierStats(perdant, 0, 0,  1);
     }
 
     /**
@@ -75,18 +65,16 @@ public class PlayerController {
      * @param pseudo Nom du joueur
      * @param nbParties Nombre de parties à ajouter
      * @param nbVictoires Nombre de victoires à ajouter
-     * @param nbEgalite Nombre d'égalités à ajouter
      * @param nbDefaites Nombre de défaites à ajouter
      * @throws IOException En cas d'erreur lors de la lecture ou de l'écriture dans le fichier
      */
-    private void modifierStats(String pseudo, int nbParties, int nbVictoires, int nbEgalite, int nbDefaites) throws IOException {
+    private void modifierStats(String pseudo, int nbParties, int nbVictoires, int nbDefaites) throws IOException {
         String filePath = "Data/" + pseudo + ".csv";
         String[] stats = lireStats(filePath);
         if (stats != null) {
             stats[1] = Integer.toString(Integer.parseInt(stats[1]) + nbParties);
             stats[2] = Integer.toString(Integer.parseInt(stats[2]) + nbVictoires);
-            stats[3] = Integer.toString(Integer.parseInt(stats[3]) + nbEgalite);
-            stats[4] = Integer.toString(Integer.parseInt(stats[4]) + nbDefaites);
+            stats[3] = Integer.toString(Integer.parseInt(stats[3]) + nbDefaites);
             ecrireStats(filePath, stats);
         }
     }
@@ -106,7 +94,7 @@ public class PlayerController {
     // Méthode pour écrire les statistiques dans un fichier CSV
     private void ecrireStats(String filePath, String[] stats) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write("\"pseudo\",nb_parties,nb_victoires,nb_egalite,nb_defaite\n");
+            writer.write("\"pseudo\",nb_parties,nb_victoires,nb_defaite\n");
             writer.write(String.join(",", stats) + "\n");
         }
     }
@@ -117,7 +105,7 @@ public class PlayerController {
             pc.verficationJoueur("joueur1");
             pc.verficationJoueur("joueur2");
 
-            pc.debutPartie("joueur1", "joueur2");
+            pc.finPartie("joueur1", "joueur2");
             pc.finPartie("joueur1", "joueur2");
         } catch (IOException e) {
             e.printStackTrace();
