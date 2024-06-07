@@ -19,6 +19,19 @@ public class NewGameController {
     private TextField textFieldPlayerTwo;
     @FXML
     private Button playButton;
+    @FXML
+    private Button createPlayerOneButton;
+    @FXML
+    private Button createPlayerTwoButton;
+    @FXML
+    private Button importPlayerOneButton;
+    @FXML
+    private Button importPlayerTwoButton;
+
+    private BooleanProperty playButtonAvailable;
+    private BooleanProperty gameRunning;
+    private BooleanProperty playerOneNameFilled;
+    private BooleanProperty playerTwoNameFilled;
 
     @FXML
     private void initialize() throws IOException {
@@ -35,7 +48,29 @@ public class NewGameController {
         String playerOneName = textFieldPlayerOne.getText();
         String playerTwoName = textFieldPlayerTwo.getText();
 
+        gameRunning.set(true);
         gameController.startGame(playerOneName, playerTwoName);
+
+    }
+
+    @FXML
+    public void importPlayerOne() {
+
+    }
+
+    @FXML
+    public void importPlayerTwo() {
+
+    }
+
+    @FXML
+    public void createPlayerOne() {
+
+    }
+
+    @FXML
+    public void createPlayerTwo() {
+
     }
 
     /**
@@ -43,27 +78,55 @@ public class NewGameController {
      */
     public void createBindings(){
 
-        BooleanProperty playersNamesFilled = new SimpleBooleanProperty(false);
+        gameRunning = new SimpleBooleanProperty(false);
+        playButtonAvailable = new SimpleBooleanProperty(false);
+        playerOneNameFilled = new SimpleBooleanProperty(false);
+        playerTwoNameFilled = new SimpleBooleanProperty(false);
 
-        BooleanBinding checkPlayerNamesFilled = new BooleanBinding() {
+        BooleanBinding checkNamePlyOne = new BooleanBinding() {
             {
-                this.bind(textFieldPlayerOne.textProperty(), textFieldPlayerTwo.textProperty());
+                this.bind(textFieldPlayerOne.textProperty());
+            }
+            @Override
+            protected boolean computeValue() {
+                return !textFieldPlayerOne.getText().isEmpty();
+            }
+        };
+
+        playerOneNameFilled.bind(checkNamePlyOne);
+
+        BooleanBinding checkNamePlyTwo = new BooleanBinding() {
+            {
+                this.bind(textFieldPlayerTwo.textProperty());
+            }
+            @Override
+            protected boolean computeValue() {
+                return !textFieldPlayerTwo.getText().isEmpty();
+            }
+        };
+
+        playerTwoNameFilled.bind(checkNamePlyTwo);
+
+        BooleanBinding playButtonAvailableCheck = new BooleanBinding() {
+            {
+                this.bind(textFieldPlayerTwo.textProperty(), textFieldPlayerOne.textProperty(), gameRunning);
             }
             @Override
             protected boolean computeValue() {
 
-                return !(textFieldPlayerOne.getText().isEmpty() || textFieldPlayerTwo.getText().isEmpty());
+                return checkNamePlyOne.get() && checkNamePlyTwo.get() && !gameRunning.get();
 
             }
         };
 
-        playersNamesFilled.bind(checkPlayerNamesFilled);
-        playButton.disableProperty().bind(playersNamesFilled.not());
+        playButtonAvailable.bind(playButtonAvailableCheck);
+        playButton.disableProperty().bind(playButtonAvailable.not());
     }
 
 
-    public void gameEnded() {
-        playButton.setDisable(false);
+    public void gameEnded(int winner) {
+        gameRunning.set(false);
+
     }
 
     public void setGameController(GameController gameController) {

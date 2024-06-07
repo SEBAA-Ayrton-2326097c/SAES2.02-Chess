@@ -18,7 +18,7 @@
          <children>
             <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
               <tabs>
-                <Tab text="NOUVELLE PARTIE">
+                <Tab text="1 CONTRE 1">
                      <content>
                         <fx:include fx:id="newGame" source="NewGameTab.fxml" />
                      </content>
