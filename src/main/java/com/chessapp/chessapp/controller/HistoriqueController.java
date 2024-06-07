@@ -31,7 +31,7 @@ public class HistoriqueController {
         }
     }
 
-    public static String crateName(String pseudo1, String pseudo2) {
+    public static String createName(String pseudo1, String pseudo2) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm");
         String formattedDate = now.format(formatter);
@@ -40,7 +40,8 @@ public class HistoriqueController {
     }
 
     public static void lectureHistorique(String file) throws IOException {
-        // Implement reading functionality if needed
+        //initialisation des pions sauf si deja fais
+
     }
 
 
@@ -48,7 +49,7 @@ public class HistoriqueController {
 
         String pseudo1 = "Player1";
         String pseudo2 = "Player2";
-        String fileName = crateName(pseudo1, pseudo2);
+        String fileName = createName(pseudo1, pseudo2);
 
         // Simulate a few moves
         Tuple move1 = new Tuple(1, 2);
