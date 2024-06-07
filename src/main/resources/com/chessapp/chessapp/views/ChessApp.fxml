@@ -1,30 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chessapp.chessapp.controller.GameController">
-   <children>
-      <GridPane fx:id="grid" layoutX="140.0" layoutY="60.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="60.0" prefWidth="60.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-      </GridPane>
-   </children>
-</AnchorPane>
+<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chessapp.chessapp.controller.GameController">
+   <right>
+      <VBox prefHeight="200.0" prefWidth="350.0" BorderPane.alignment="CENTER">
+         <children>
+            <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
+              <tabs>
+                <Tab text="1 CONTRE 1">
+                     <content>
+                        <fx:include fx:id="newGame" source="NewGameTab.fxml" />
+                     </content>
+                </Tab>
+                <Tab text="HISTORIQUE">
+                     <content>
+                         <fx:include fx:id="historyTab" source="HistoryTab.fxml" />
+                     </content>
+                </Tab>
+                  <Tab text="JOUEURS">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </VBox>
+   </right>
+   <center>
+      <VBox id="gameVbox" alignment="CENTER">
+         <children>
+            <Label id="labelPlayer" fx:id="labelPlayerOne" text="JOUEUR NOIR" />
+            <VBox>
+               <children>
+                  <GridPane fx:id="grid" alignment="CENTER" maxHeight="500.0" maxWidth="500.0" prefHeight="500.0" prefWidth="500.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="70.0" prefWidth="70.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+               </children>
+            </VBox>
+            <Label id="labelPlayer" fx:id="labelPlayerTwo" text="JOUEUR BLANC" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

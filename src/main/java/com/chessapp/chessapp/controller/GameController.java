@@ -4,21 +4,25 @@ import com.chessapp.chessapp.model.*;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
+import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
  *
  */
 public class GameController {
 
-
-    // TODO : Couleurs de l'interface de chess.com
+    @FXML
+    private Label labelPlayerOne;
+    @FXML
+    private Label labelPlayerTwo;
     @FXML
     private GridPane grid;
+
     private Piece movingPiece;
 
     private StackPane[][] cases;
@@ -27,25 +31,56 @@ public class GameController {
     private int clickNumber;
     private StackPane firstClickedPane;
 
-    int sourceX, sourceY, destX, destY;
+    @FXML
+    private NewGameController newGameController;
+
+    private static final String squareOneColor = "#739552";
+    private static final String squareTwoColor = "#EBECD0";
+    private static final String canMoveSquareColor = "#EB7D6A";
+    private static final String clickedSquareColor = "#F5F682";
+    
+    private int sourceX, sourceY, destX, destY;
+
+    private int currentTurnColor;
+    private List<Piece> blackPieces;
+    private List<Piece> whitePieces;
+    private King whiteKing;
+    private King blackKing;
+
 
     /**
      * Initialisation de la matrice de stackPanes, du plateau de jeu, et des events pour chaque case
-     *
      */
     @FXML
-    public void initialize() throws Exception {
+    public void initialize() {
+        newGameController.setGameController(this);
+
         cases = new StackPane[8][8];
         plateau = new Plateau();
-
         clickNumber = 0;
+        currentTurnColor = 1;
 
-        for(int j = 0; j < 8; ++j) {
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
+    }
+
+    /**
+     * Fonction appellée quand le bouton de lancement est cliqué
+     * @param playerOneName Nom du joueur 1
+     * @param playerTwoName Nom du joueur 2
+     */
+    public void startGame(String playerOneName, String playerTwoName) throws Exception {
+        System.out.println("start game called in GameController");
+
+        labelPlayerOne.setText(playerOneName);
+        labelPlayerTwo.setText(playerTwoName);
+
+        for (int j = 0; j < 8; ++j) {
             for (int i = 0; i < 8; i++) {
 
                 StackPane stackPane = new StackPane();
 
-                String squareColor = ((i + j) % 2 == 0) ? "beige" : "lightgreen";
+                String squareColor = ((i + j) % 2 == 0) ? squareOneColor : squareTwoColor;
                 stackPane.setStyle("-fx-background-color: " + squareColor + "; -fx-border-color: black");
 
                 Piece piece = getPiece(j, i);
@@ -53,17 +88,22 @@ public class GameController {
                 if(piece != null) {
                     plateau.addPiece(i, j, piece);
                     stackPane.getChildren().add(piece);
+                    if (piece.getColor() == 1) {
+                        if(piece.getPieceType().equals("king")) whiteKing = (King) piece;
+                        whitePieces.add(piece);
+                    } else {
+                        if(piece.getPieceType().equals("king")) blackKing = (King) piece;
+                        blackPieces.add(piece);
+                    }
                 }
 
-                stackPane.setOnMouseClicked(e -> {
-                    onMouseClicked(e, stackPane);
-                });
+                stackPane.setOnMouseClicked(e -> onMouseClicked(e, stackPane)
+                );
 
                 cases[i][j] = stackPane;
                 grid.add(stackPane, i, j);
             }
         }
-
     }
 
     /**
@@ -102,22 +142,52 @@ public class GameController {
     public void onMouseClicked(Event e, StackPane stackPane) {
 
         List<Tuple> availableMoves;
+        King currentKing, enemyKing;
+        List<Piece> enemyTeam;
 
-        if (clickNumber == 0 && !stackPane.getChildren().isEmpty()) {
-            movingPiece = (Piece) stackPane.getChildren().get(0);
-            stackPane.setStyle("-fx-background-color: green; -fx-border-color: black");
-            firstClickedPane = stackPane;
-            clickNumber = 1;
-            sourceX = GridPane.getColumnIndex((Node) e.getSource());
-            sourceY = GridPane.getRowIndex((Node) e.getSource());
+        if (currentTurnColor == -1) {
+            currentKing = blackKing;
+            enemyKing = whiteKing;
+            enemyTeam = whitePieces;
+        } else {
+            currentKing = whiteKing;
+            enemyKing = blackKing;
+            enemyTeam = blackPieces;
+        }
+        if (clickNumber == 0 && !stackPane.getChildren().isEmpty()) { // si c'est le premier clic, sur une case non vide, on initie le mouvement
 
-            availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+            movingPiece = (Piece) stackPane.getChildren().get(0); // pièce qui doit être bougée
 
-            showAvailableMoves(availableMoves);
+            if (currentKing.isAttacked(plateau, enemyTeam)) { // si le roi est attaqué
+                if (!movingPiece.equals(currentKing)) return;
+
+                if(!canMove(currentKing)) {
+                    endGame(currentTurnColor * -1);
+                    return;
+                }
+            }
+
+            if (movingPiece.getColor() == currentTurnColor) {
+                stackPane.setStyle("-fx-background-color: " + clickedSquareColor + "; -fx-border-color: black");
+                firstClickedPane = stackPane;
+                clickNumber = 1;
+                sourceX = GridPane.getColumnIndex((Node) e.getSource());
+                sourceY = GridPane.getRowIndex((Node) e.getSource());
+
+                if(!movingPiece.equals(currentKing))
+                    availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
+                else {
+                    availableMoves = currentKing.calculateMovements(plateau);
+                    // availableMoves = filterSuicideMoves(availableMoves, enemyTeam);
+                    // essai de retirer les déplacements qui tuent le roi, ne fonctionne pas comme prévu
+                }
+                showAvailableMoves(availableMoves);
+            }
             // System.out.println(availableMoves);
 
         }
         else if (clickNumber == 1) {
+
             destX = GridPane.getColumnIndex((Node) e.getSource());
             destY = GridPane.getRowIndex((Node) e.getSource());
 
@@ -130,6 +200,14 @@ public class GameController {
 
                 stackPane.getChildren().setAll(movingPiece); // mouvement de la pièce visuellement
 
+                if(plateau.getPiece(destX, destY) != null) {
+                    if (plateau.getPiece(destX, destY).equals(enemyKing)) {
+                        System.out.println("partie terminée, victoire des " + ((currentTurnColor == -1) ? "noirs" : "blancs"));
+                    } else {
+                        enemyTeam.remove(plateau.getPiece(destX, destY));
+                    }
+                }
+
                 try {
                     plateau.movement(sourceX, sourceY, destX, destY);
                     // plateau.showGrid();
@@ -137,10 +215,11 @@ public class GameController {
                     throw new RuntimeException(ex);
                 }
 
+                currentTurnColor = currentTurnColor * -1;
             }
 
             // dans tous les cas on remet les couleurs comme avant
-            String sourceColor = ((sourceX + sourceY) % 2 == 0) ? "beige" : "lightgreen";
+            String sourceColor = ((sourceX + sourceY) % 2 == 0) ? squareOneColor : squareTwoColor;
             firstClickedPane.setStyle("-fx-background-color: " + sourceColor + "; -fx-border-color: black");
 
             firstClickedPane = null;
@@ -183,7 +262,7 @@ public class GameController {
         for (Tuple coords : availableMoves) {
             x = (int) coords.getFirst();
             y = (int) coords.getSecond();
-            cases[x][y].setStyle("-fx-background-color: red; -fx-border-color: black");
+            cases[x][y].setStyle("-fx-background-color: " + canMoveSquareColor + "; -fx-border-color: black");
         }
     }
 
@@ -197,8 +276,37 @@ public class GameController {
         for (Tuple coords : availableMoves) {
             x = (int) coords.getFirst();
             y = (int) coords.getSecond();
-            color = ((x + y) % 2 == 0) ? "beige" : "lightgreen";
+            color = ((x + y) % 2 == 0) ? squareOneColor : squareTwoColor;
             cases[x][y].setStyle("-fx-background-color: " + color + "; -fx-border-color: black");
         }
+    }
+
+    public List<Tuple> filterSuicideMoves(List<Tuple> availableMoves, List<Piece> enemyTeam) {
+        List<Tuple> threatenedPositions = new ArrayList<>();
+
+        for (Piece p : enemyTeam) {
+            for (Tuple enemyMove : p.calculateMovements(plateau)) {
+                threatenedPositions.add(enemyMove);
+            }
+        }
+
+        availableMoves.removeIf(threatenedPositions::contains);
+
+        return availableMoves;
+    }
+
+    /**
+     * renvoie true si la pièce fournie a un déplacement possible
+     * @param piece pièce à vérifier
+     * @return
+     */
+    public boolean canMove(Piece piece){
+        return piece.calculateMovements(plateau).isEmpty();
+    }
+
+    public void endGame(int winner) {
+        System.out.println("victoire " + winner);
+        plateau.clearPlateau();
+        newGameController.gameEnded(winner);
     }
 }
