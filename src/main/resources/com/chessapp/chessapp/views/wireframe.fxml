@@ -55,7 +55,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -64,7 +64,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/knight_b.png" />
+                              <Image url="@../img/knight_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -73,7 +73,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/bishop_b.png" />
+                              <Image url="@../img/bishop_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -82,7 +82,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/queen_b.png" />
+                              <Image url="@../img/queen_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -91,7 +91,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/king_b.png" />
+                              <Image url="@../img/king_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -100,7 +100,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/bishop_b.png" />
+                              <Image url="@../img/bishop_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -109,7 +109,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/knight_b.png" />
+                              <Image url="@../img/knight_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -118,7 +118,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/rook_b.png" />
+                              <Image url="@../img/rook_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -127,7 +127,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/rook_b.png" />
+                              <Image url="@../img/rook_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -136,7 +136,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -145,7 +145,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -154,7 +154,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -163,7 +163,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -172,7 +172,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -181,7 +181,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
@@ -190,7 +190,7 @@
                      <children>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Téléchargements/svgtopng/pawn_b.png" />
+                              <Image url="@../img/pawn_b.png" />
                            </image>
                         </ImageView>
                      </children>
