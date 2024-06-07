@@ -89,4 +89,7 @@ public class Plateau {
         this.plateau = newPlateau;
     }
 
+    public void clearPlateau() {
+        this.plateau = new Piece[8][8];
+    }
 }

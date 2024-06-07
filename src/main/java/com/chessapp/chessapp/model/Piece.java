@@ -53,6 +53,9 @@ public abstract class Piece extends ImageView {
     public int getyTab() {
         return yTab;
     }
+    public Tuple getCoords() {
+        return new Tuple(xTab, yTab);
+    }
 
     public void setxTab(int xTab) {
         this.xTab = xTab;
@@ -61,6 +64,7 @@ public abstract class Piece extends ImageView {
     public void setyTab(int yTab) {
         this.yTab = yTab;
     }
+
 
     /**
      * Calcule tous les mouvements possible de la pièce
@@ -82,6 +86,24 @@ public abstract class Piece extends ImageView {
 
         for(Tuple coords : this.calculateMovements(plateau)) {
             if (destinationCoords.equals(coords)) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * renvoie true si la pièce fournie est attaquée par une autre
+     * @param enemyTeam liste des pièces de l'équipe ennemie
+     * @param plateau plateau sur lequel vérifier l'attaque
+     * @return
+     */
+    public boolean isAttacked(Plateau plateau, List<Piece> enemyTeam) {
+        Tuple pieceCoords = new Tuple(getxTab(), getyTab());
+
+        for(Piece p : enemyTeam) {
+            for(Tuple move : p.calculateMovements(plateau)) {
+                if (move.equals(pieceCoords)) return true;
+            }
         }
 
         return false;
