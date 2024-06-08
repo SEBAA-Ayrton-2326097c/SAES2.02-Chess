@@ -8,8 +8,9 @@ ids personnalisés
 }
 
 #playText {
-    -fx-text-fill: lightgreen;
+    -fx-text-fill: #dedede;
     -fx-font-size: 30px;
+    -fx-font-weight: 700;
 }
 
 #playButton {
@@ -72,7 +73,7 @@ ids personnalisés
 }
 
 .root {
-    -fx-font-family: "Montserrat Bold";
+    -fx-font-family: "Montserrat";
 }
 
 .tab:selected {
