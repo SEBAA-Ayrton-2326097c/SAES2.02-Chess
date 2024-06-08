@@ -10,15 +10,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
- *
+ *`
  */
 public class GameController {
+
+    private static final String squareOneColor = "#739552";
+    private static final String squareTwoColor = "#EBECD0";
+    private static final String canMoveSquareColor = "#EB7D6A";
+    private static final String clickedSquareColor = "#F5F682";
 
     @FXML
     private Label labelPlayerOne;
@@ -26,27 +32,20 @@ public class GameController {
     private Label labelPlayerTwo;
     @FXML
     private GridPane grid;
-
-    private Piece movingPiece;
-
-    private StackPane[][] cases;
-    private Plateau plateau;
-
-    private int clickNumber;
-    private StackPane firstClickedPane;
-
-    private boolean playingAgainstBot;
-
     @FXML
     private NewGameController newGameController;
 
-    private static final String squareOneColor = "#739552";
-    private static final String squareTwoColor = "#EBECD0";
-    private static final String canMoveSquareColor = "#EB7D6A";
-    private static final String clickedSquareColor = "#F5F682";
-    
-    private int sourceX, sourceY, destX, destY;
+    private Piece movingPiece;
+    private StackPane[][] cases;
+    private Plateau plateau;
 
+    private StackPane firstClickedPane;
+
+    private boolean playingAgainstBot;
+    private boolean gameRunning;
+    private int sourceX;
+    private int sourceY;
+    private int clickNumber;
     private int currentTurnColor;
     private List<Piece> blackPieces;
     private List<Piece> whitePieces;
@@ -78,9 +77,11 @@ public class GameController {
     public void startGame(String playerOneName, String playerTwoName, boolean playingAgainstBot) throws Exception {
         System.out.println("start game called in GameController");
 
+        plateau.clearPlateau();
         this.playingAgainstBot = playingAgainstBot;
         labelPlayerOne.setText(playerOneName);
         labelPlayerTwo.setText(playerTwoName);
+        gameRunning = true;
 
         for (int j = 0; j < 8; ++j) {
             for (int i = 0; i < 8; i++) {
@@ -104,8 +105,13 @@ public class GameController {
                     }
                 }
 
-                stackPane.setOnMouseClicked(e -> onMouseClicked(e, stackPane)
-                );
+                stackPane.setOnMouseClicked(e -> {
+                    try {
+                        onMouseClicked(e, stackPane);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
 
                 cases[i][j] = stackPane;
                 grid.add(stackPane, i, j);
@@ -142,11 +148,12 @@ public class GameController {
     }
 
     /**
-     * Appelle cette fonction lorsqu'on clique sur une case, elle permet de distinguer les deux phases de clics, la pièce bougée, l'appel de l'affichage. Gère aussi le mouvement graphique et technique entre deux cases et sa validité
+     * Appelle cette fonction lorsqu'on clique sur une case, elle permet de distinguer les deux phases de clics, la pièce bougée, l'affichage des mouvements.
+     * Gère aussi le mouvement graphique et technique entre deux cases et sa validité
      * @param e L'event du clic
      * @param stackPane Le stackpane concerné
      */
-    public void onMouseClicked(Event e, StackPane stackPane) {
+    public void onMouseClicked(Event e, StackPane stackPane) throws IOException {
 
         List<Tuple> availableMoves;
         King currentKing, enemyKing;
@@ -168,7 +175,7 @@ public class GameController {
             if (currentKing.isAttacked(plateau, enemyTeam)) { // si le roi est attaqué
                 if (!movingPiece.equals(currentKing)) return;
 
-                if(!canMove(currentKing)) {
+                if(!currentKing.canPieceMove(plateau)) {
                     endGame(currentTurnColor * -1);
                     return;
                 }
@@ -195,8 +202,8 @@ public class GameController {
         }
         else if (clickNumber == 1) {
 
-            destX = GridPane.getColumnIndex((Node) e.getSource());
-            destY = GridPane.getRowIndex((Node) e.getSource());
+            int destX = GridPane.getColumnIndex((Node) e.getSource());
+            int destY = GridPane.getRowIndex((Node) e.getSource());
 
             availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
             // System.out.println(sourceX + " " + sourceY + " " + destX + " " + destY);
@@ -223,7 +230,7 @@ public class GameController {
                 }
 
                 currentTurnColor = currentTurnColor * -1;
-                if (playingAgainstBot) {
+                if (playingAgainstBot && gameRunning) {
                     playBotMove();
                 }
             }
@@ -311,7 +318,7 @@ public class GameController {
     /**
      * Joue le mouvement de l'IA si l'option est choisie en début de partie
      */
-    public void playBotMove() {
+    public void playBotMove() throws IOException {
         Random rand = new Random();
         Piece toMovePiece = blackPieces.get(rand.nextInt(blackPieces.size())); // pièce aléatoire
 
@@ -345,22 +352,19 @@ public class GameController {
         currentTurnColor = 1;
     }
 
-
-
     /**
-     * renvoie true si la pièce fournie a un déplacement possible
-     * @param piece pièce à vérifier
-     * @return
+     * termine la partie en cours, généralement quand elle est gagnée par un des deux joueurs
+     * @param winner couleur du gagnant
      */
-    public boolean canMove(Piece piece){
-        return piece.calculateMovements(plateau).isEmpty();
-    }
-
-    public void endGame(int winner) {
+    public void endGame(int winner) throws IOException {
         System.out.println("victoire " + winner);
-        plateau.clearPlateau();
-        cases = new StackPane[8][8];
+        for (StackPane[] spList : cases) {
+            for (StackPane sp : spList) {
+                sp.setOnMouseClicked(null);
+            }
+        }
         newGameController.gameEnded(winner);
+        gameRunning = false;
     }
 
 }

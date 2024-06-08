@@ -1,11 +1,12 @@
 package com.chessapp.chessapp.controller;
 
-import javafx.beans.binding.Bindings;
+import com.chessapp.chessapp.model.PlayerHandler;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import java.io.IOException;
 
@@ -20,22 +21,24 @@ public class NewGameController {
     @FXML
     private Button playButton;
     @FXML
-    private Button createPlayerOneButton;
-    @FXML
-    private Button createPlayerTwoButton;
-    @FXML
     private Button importPlayerOneButton;
     @FXML
     private Button importPlayerTwoButton;
+    @FXML
+    private Label infoLabel;
 
-    private BooleanProperty playButtonAvailable;
+    private String playerOneName, playerTwoName;
     private BooleanProperty gameRunning;
-    private BooleanProperty playerOneNameFilled;
-    private BooleanProperty playerTwoNameFilled;
+    private BooleanProperty playerOneImported;
+    private BooleanProperty playerTwoImported;
+    private PlayerHandler playerHandler;
 
     @FXML
     private void initialize() throws IOException {
         System.out.println("init GameController");
+        infoLabel.setText("Merci de importer vos pseudos (3 chars min.)");
+
+        playerHandler = new PlayerHandler();
 
         createBindings();
     }
@@ -45,32 +48,38 @@ public class NewGameController {
      */
     @FXML
     public void startGame() throws Exception {
-        String playerOneName = textFieldPlayerOne.getText();
-        String playerTwoName = textFieldPlayerTwo.getText();
 
         gameRunning.set(true);
         gameController.startGame(playerOneName, playerTwoName, true);
-
+        infoLabel.setText("Partie commencée, bonne chance !");
     }
 
     @FXML
     public void importPlayerOne() {
+        playerOneName = textFieldPlayerOne.getText();
+        try {
+            playerHandler.verficationJoueur(playerOneName.toLowerCase());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        infoLabel.setText(String.format("Joueur 1 (%s) importé avec succès.", playerOneName));
+
+        playerOneImported.set(true);
     }
 
     @FXML
     public void importPlayerTwo() {
+        playerTwoName = textFieldPlayerTwo.getText();
+        try {
+            playerHandler.verficationJoueur(playerTwoName.toLowerCase());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-    }
+        infoLabel.setText(String.format("Joueur 2 (%s) importé avec succès.", playerTwoName));
 
-    @FXML
-    public void createPlayerOne() {
-
-    }
-
-    @FXML
-    public void createPlayerTwo() {
-
+        playerTwoImported.set(true);
     }
 
     /**
@@ -79,9 +88,8 @@ public class NewGameController {
     public void createBindings(){
 
         gameRunning = new SimpleBooleanProperty(false);
-        playButtonAvailable = new SimpleBooleanProperty(false);
-        playerOneNameFilled = new SimpleBooleanProperty(false);
-        playerTwoNameFilled = new SimpleBooleanProperty(false);
+        playerOneImported = new SimpleBooleanProperty(false);
+        playerTwoImported = new SimpleBooleanProperty(false);
 
         BooleanBinding checkNamePlyOne = new BooleanBinding() {
             {
@@ -89,11 +97,9 @@ public class NewGameController {
             }
             @Override
             protected boolean computeValue() {
-                return !textFieldPlayerOne.getText().isEmpty();
+                return textFieldPlayerOne.getText().length() > 2;
             }
         };
-
-        playerOneNameFilled.bind(checkNamePlyOne);
 
         BooleanBinding checkNamePlyTwo = new BooleanBinding() {
             {
@@ -101,34 +107,50 @@ public class NewGameController {
             }
             @Override
             protected boolean computeValue() {
-                return !textFieldPlayerTwo.getText().isEmpty();
+                return textFieldPlayerTwo.getText().length() > 2;
             }
         };
 
-        playerTwoNameFilled.bind(checkNamePlyTwo);
+        importPlayerOneButton.disableProperty().bind(checkNamePlyOne.not());
+        importPlayerTwoButton.disableProperty().bind(checkNamePlyTwo.not());
 
-        BooleanBinding playButtonAvailableCheck = new BooleanBinding() {
+        BooleanBinding checkBothPlayersImported = new BooleanBinding() {
             {
-                this.bind(textFieldPlayerTwo.textProperty(), textFieldPlayerOne.textProperty(), gameRunning);
+                this.bind(playerOneImported, playerTwoImported);
             }
+
             @Override
             protected boolean computeValue() {
-
-                return checkNamePlyOne.get() && checkNamePlyTwo.get() && !gameRunning.get();
-
+                return playerOneImported.get() && playerTwoImported.get() && !gameRunning.get();
             }
         };
 
-        playButtonAvailable.bind(playButtonAvailableCheck);
-        playButton.disableProperty().bind(playButtonAvailable.not());
+        playButton.disableProperty().bind(checkBothPlayersImported.not());
     }
 
 
-    public void gameEnded(int winner) {
+    /**
+     * est appelée lorsque la partie se termine, modifie les fichiers des joueurs et permet au joueur de relancer la partie
+     * @param winner -1 / 1
+     * @throws IOException si erreur lors de la lecture des fichiers
+     */
+    public void gameEnded(int winner) throws IOException {
         gameRunning.set(false);
 
+        if (winner == 1) {
+            playerHandler.finPartie(playerOneName, playerTwoName);
+            infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerOneName));
+        } else {
+            playerHandler.finPartie(playerTwoName, playerOneName);
+            infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerTwoName));
+        }
+
     }
 
+    /**
+     * importe le controlleur principal du jeu
+     * @param gameController
+     */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
         System.out.println(gameController);

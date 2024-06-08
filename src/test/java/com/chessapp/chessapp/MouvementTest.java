@@ -60,7 +60,6 @@ public class MouvementTest {
             Pawn pionG8 = new Pawn(6,7,1);
             plateau.addPiece(6, 7, pionG8); // Cavalier en H8
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
