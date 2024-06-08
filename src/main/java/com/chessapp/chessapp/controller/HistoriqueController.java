@@ -1,9 +1,6 @@
 package com.chessapp.chessapp.controller;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -40,8 +37,31 @@ public class HistoriqueController {
     }
 
     public static void lectureHistorique(String file) throws IOException {
-        //initialisation des pions sauf si deja fais
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            if (line == null) {
+                throw new IOException("Le fichier est vide");
+            }
 
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length != 4) {
+                    throw new IOException("Ligne de format incorrect: " + line);
+                }
+
+                int oldx = Integer.parseInt(values[0]);
+                int oldy = Integer.parseInt(values[1]);
+                int newx = Integer.parseInt(values[2]);
+                int newy = Integer.parseInt(values[3]);
+
+                System.out.println("oldx: " + oldx + ", oldy: " + oldy + ", newx: " + newx + ", newy: " + newy);
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Problème durant la lecture du fichier", e);
+        }
     }
 
 
@@ -65,6 +85,8 @@ public class HistoriqueController {
             // Writing the moves to the history file
             controller.ecritureHistorique(fileName, move1, move2);
             controller.ecritureHistorique(fileName, move3, move4);
+
+            controller.lectureHistorique("Data/Historique/" + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
