@@ -1,20 +1,30 @@
 package com.chessapp.chessapp.controller;
 
 import com.chessapp.chessapp.model.*;
+import javafx.animation.PauseTransition;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 /**
  * Controlleur principal du jeu, gère la boucle du jeu, l'initialisation de la grille, ...
- *
+ *`
  */
 public class GameController {
+
+    private static final String squareOneColor = "#739552";
+    private static final String squareTwoColor = "#EBECD0";
+    private static final String canMoveSquareColor = "#EB7D6A";
+    private static final String clickedSquareColor = "#F5F682";
 
     @FXML
     private Label labelPlayerOne;
@@ -22,25 +32,20 @@ public class GameController {
     private Label labelPlayerTwo;
     @FXML
     private GridPane grid;
-
-    private Piece movingPiece;
-
-    private StackPane[][] cases;
-    private Plateau plateau;
-
-    private int clickNumber;
-    private StackPane firstClickedPane;
-
     @FXML
     private NewGameController newGameController;
 
-    private static final String squareOneColor = "#739552";
-    private static final String squareTwoColor = "#EBECD0";
-    private static final String canMoveSquareColor = "#EB7D6A";
-    private static final String clickedSquareColor = "#F5F682";
-    
-    private int sourceX, sourceY, destX, destY;
+    private Piece movingPiece;
+    private StackPane[][] cases;
+    private Plateau plateau;
 
+    private StackPane firstClickedPane;
+
+    private boolean playingAgainstBot;
+    private boolean gameRunning;
+    private int sourceX;
+    private int sourceY;
+    private int clickNumber;
     private int currentTurnColor;
     private List<Piece> blackPieces;
     private List<Piece> whitePieces;
@@ -69,11 +74,14 @@ public class GameController {
      * @param playerOneName Nom du joueur 1
      * @param playerTwoName Nom du joueur 2
      */
-    public void startGame(String playerOneName, String playerTwoName) throws Exception {
+    public void startGame(String playerOneName, String playerTwoName, boolean playingAgainstBot) throws Exception {
         System.out.println("start game called in GameController");
 
+        plateau.clearPlateau();
+        this.playingAgainstBot = playingAgainstBot;
         labelPlayerOne.setText(playerOneName);
         labelPlayerTwo.setText(playerTwoName);
+        gameRunning = true;
 
         for (int j = 0; j < 8; ++j) {
             for (int i = 0; i < 8; i++) {
@@ -97,8 +105,13 @@ public class GameController {
                     }
                 }
 
-                stackPane.setOnMouseClicked(e -> onMouseClicked(e, stackPane)
-                );
+                stackPane.setOnMouseClicked(e -> {
+                    try {
+                        onMouseClicked(e, stackPane);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
 
                 cases[i][j] = stackPane;
                 grid.add(stackPane, i, j);
@@ -135,11 +148,12 @@ public class GameController {
     }
 
     /**
-     * Appelle cette fonction lorsqu'on clique sur une case, elle permet de distinguer les deux phases de clics, la pièce bougée, l'appel de l'affichage. Gère aussi le mouvement graphique et technique entre deux cases et sa validité
+     * Appelle cette fonction lorsqu'on clique sur une case, elle permet de distinguer les deux phases de clics, la pièce bougée, l'affichage des mouvements.
+     * Gère aussi le mouvement graphique et technique entre deux cases et sa validité
      * @param e L'event du clic
      * @param stackPane Le stackpane concerné
      */
-    public void onMouseClicked(Event e, StackPane stackPane) {
+    public void onMouseClicked(Event e, StackPane stackPane) throws IOException {
 
         List<Tuple> availableMoves;
         King currentKing, enemyKing;
@@ -161,7 +175,7 @@ public class GameController {
             if (currentKing.isAttacked(plateau, enemyTeam)) { // si le roi est attaqué
                 if (!movingPiece.equals(currentKing)) return;
 
-                if(!canMove(currentKing)) {
+                if(!currentKing.canPieceMove(plateau)) {
                     endGame(currentTurnColor * -1);
                     return;
                 }
@@ -188,8 +202,8 @@ public class GameController {
         }
         else if (clickNumber == 1) {
 
-            destX = GridPane.getColumnIndex((Node) e.getSource());
-            destY = GridPane.getRowIndex((Node) e.getSource());
+            int destX = GridPane.getColumnIndex((Node) e.getSource());
+            int destY = GridPane.getRowIndex((Node) e.getSource());
 
             availableMoves = plateau.getPiece(sourceX, sourceY).calculateMovements(plateau);
             // System.out.println(sourceX + " " + sourceY + " " + destX + " " + destY);
@@ -202,7 +216,7 @@ public class GameController {
 
                 if(plateau.getPiece(destX, destY) != null) {
                     if (plateau.getPiece(destX, destY).equals(enemyKing)) {
-                        System.out.println("partie terminée, victoire des " + ((currentTurnColor == -1) ? "noirs" : "blancs"));
+                        endGame(-1);
                     } else {
                         enemyTeam.remove(plateau.getPiece(destX, destY));
                     }
@@ -216,6 +230,9 @@ public class GameController {
                 }
 
                 currentTurnColor = currentTurnColor * -1;
+                if (playingAgainstBot && gameRunning) {
+                    playBotMove();
+                }
             }
 
             // dans tous les cas on remet les couleurs comme avant
@@ -227,6 +244,8 @@ public class GameController {
             availableMoves.clear();
 
             clickNumber = 0;
+
+
 
         }
     }
@@ -285,28 +304,67 @@ public class GameController {
         List<Tuple> threatenedPositions = new ArrayList<>();
 
         for (Piece p : enemyTeam) {
-            for (Tuple enemyMove : p.calculateMovements(plateau)) {
-                threatenedPositions.add(enemyMove);
-            }
+            threatenedPositions.addAll(p.calculateMovements(plateau));
         }
 
-        availableMoves.removeIf(threatenedPositions::contains);
+        for (Tuple move : availableMoves){
+            availableMoves.remove(move);
+        }
 
         return availableMoves;
     }
 
+
     /**
-     * renvoie true si la pièce fournie a un déplacement possible
-     * @param piece pièce à vérifier
-     * @return
+     * Joue le mouvement de l'IA si l'option est choisie en début de partie
      */
-    public boolean canMove(Piece piece){
-        return piece.calculateMovements(plateau).isEmpty();
+    public void playBotMove() throws IOException {
+        Random rand = new Random();
+        Piece toMovePiece = blackPieces.get(rand.nextInt(blackPieces.size())); // pièce aléatoire
+
+        while (!toMovePiece.canPieceMove(plateau)) {
+            toMovePiece = blackPieces.get(rand.nextInt(blackPieces.size())); // si la pièce est coincée, on choisit un autre
+        }
+
+        // on récupère le code de mouvement utilisé par les joueurs
+        List<Tuple> botMoves = toMovePiece.calculateMovements(plateau);
+        Tuple destCoords = botMoves.get(rand.nextInt(botMoves.size()));
+        int botX = (int) destCoords.getFirst();
+        int botY = (int) destCoords.getSecond();
+
+        cases[botX][botY].getChildren().setAll(toMovePiece); // mouvement de la pièce visuellement
+
+        if(plateau.getPiece(botX, botY) != null) {
+            if (plateau.getPiece(botX, botY).equals(whiteKing)) {
+                endGame(-1);
+            } else {
+                whitePieces.remove(plateau.getPiece(botX, botY));
+            }
+        }
+
+        try {
+            plateau.movement(toMovePiece.getxTab(), toMovePiece.getyTab(), botX, botY);
+            // plateau.showGrid();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+        currentTurnColor = 1;
     }
 
-    public void endGame(int winner) {
+    /**
+     * termine la partie en cours, généralement quand elle est gagnée par un des deux joueurs
+     * @param winner couleur du gagnant
+     */
+    public void endGame(int winner) throws IOException {
         System.out.println("victoire " + winner);
-        plateau.clearPlateau();
+        for (StackPane[] spList : cases) {
+            for (StackPane sp : spList) {
+                sp.setOnMouseClicked(null);
+            }
+        }
         newGameController.gameEnded(winner);
+        gameRunning = false;
     }
+
 }

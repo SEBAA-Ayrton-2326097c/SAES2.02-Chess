@@ -109,4 +109,8 @@ public abstract class Piece extends ImageView {
         return false;
     }
 
+    public boolean canPieceMove(Plateau plateau) {
+        return !this.calculateMovements(plateau).isEmpty();
+    }
+
 }

@@ -1,3 +1,7 @@
+/*
+fichier css regroupant toutes les règles de style du jeu d'échecs
+certaines règles simples sont implémentées directement sur l'objet par souci de simplicité
+*/
 
 /*
 ids personnalisés
@@ -13,26 +17,9 @@ ids personnalisés
 }
 
 #playButton {
-    -fx-text-fill: #262522;
-    -fx-font-size: 15px;
-    -fx-background-color: lightgreen;
-    -fx-padding: 10 20 10 20;
-    -fx-effect: dropshadow(gaussian, #3ea83e, 10, 0, 0, 1);
-}
-
-
-
-#importPlayerButton {
-    -fx-text-fill: #262522;
-    -fx-font-size: 15px;
-    -fx-background-color: lightgreen;
-    -fx-padding: 10 20 10 20;
-    -fx-effect: dropshadow(gaussian, #3ea83e, 10, 0, 0, 1);
-}
-
-#importPlayerButton {
-    -fx-text-fill: #262522;
-    -fx-font-size: 15px;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 25px;
     -fx-background-color: lightgreen;
     -fx-padding: 10 20 10 20;
     -fx-effect: dropshadow(gaussian, #3ea83e, 10, 0, 0, 1);
@@ -42,25 +29,21 @@ ids personnalisés
     -fx-background-color: #9cec9c;
 }
 
+#importPlayerButton {
+    -fx-text-fill: #262522;
+    -fx-font-size: 15px;
+    -fx-background-color: lightgreen;
+    -fx-padding: 10 20 10 20;
+    -fx-effect: dropshadow(gaussian, #3ea83e, 10, 0, 0, 1);
+}
+
 #importPlayerButton:hover {
     -fx-background-color: #9cec9c;
 }
 
 #labelPlayer {
-    -fx-text-fill: black;
+    -fx-text-fill: white;
     -fx-font-size: 15px;
-}
-
-#createPlayerButton {
-    -fx-text-fill: lightgreen;
-    -fx-font-size: 15px;
-    -fx-background-color: #484845;
-    -fx-padding: 10 20 10 20;
-    -fx-effect: dropshadow(gaussian, black, 10, 0, 0, 1);;
-}
-
-#createPlayerButton:hover {
-    -fx-background-color: #60605f;
 }
 
 #playerNameTextField {
@@ -69,6 +52,12 @@ ids personnalisés
     -fx-text-fill: #ffffff;
     -fx-background-color: #60605f;
     -fx-display-caret:true;
+}
+
+#infoLabel {
+    -fx-font-weight: 500;
+    -fx-font-size: 15px;
+    -fx-text-fill: white;
 }
 
 .tab:selected {
@@ -94,11 +83,7 @@ ids personnalisés
     -fx-text-fill: white;
 }
 
-@font-face {
-    font-family: 'CustomFont';
-    src: url('../font/Mosk Bold 700.ttf');
-}
-
 .root {
-    -fx-font-family: 'CustomFont';
+    -fx-font-family: 'Montserrat';
+    -fx-font-weight: 700;
 }
