@@ -51,10 +51,9 @@ public class Knight extends Piece {
                 {x - 1, y - 2}
         };
 
-
         for (int[] move : possibleMoves) { // on vérifie toutes les positions
             if (!(move[0] < 0 || move[0] > 7 || move[1] < 0 || move[1] > 7)) { // tant qu'on ne dépasse pas
-                if (plateau.getPiece(move[0], move[1]) == null || plateau.getPiece(move[0], move[1]).getColor() != color) // et qu'il n'y a pas de pièce ennemie
+                if (plateau.getPiece(move[0], move[1]) == null || plateau.getPiece(move[0], move[1]).getColor() != color) // et qu'il n'y a pas de pièce alliée
                     availableMovements.add(new Tuple(move[0], move[1])); // le mouvement est valide
             }
         }

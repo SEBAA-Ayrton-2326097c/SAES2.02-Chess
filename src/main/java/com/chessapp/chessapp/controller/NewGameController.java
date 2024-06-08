@@ -49,7 +49,7 @@ public class NewGameController {
         String playerTwoName = textFieldPlayerTwo.getText();
 
         gameRunning.set(true);
-        gameController.startGame(playerOneName, playerTwoName);
+        gameController.startGame(playerOneName, playerTwoName, true);
 
     }
 
