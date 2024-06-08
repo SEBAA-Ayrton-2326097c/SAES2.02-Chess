@@ -1,9 +1,6 @@
 package com.chessapp.chessapp.model;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -37,15 +34,38 @@ public class HistoriqueHandler {
     }
 
     public static void lectureHistorique(String file) throws IOException {
-        //initialisation des pions sauf si deja fais
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            if (line == null) {
+                throw new IOException("Le fichier est vide");
+            }
 
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length != 4) {
+                    throw new IOException("Ligne de format incorrect: " + line);
+                }
+
+                int oldx = Integer.parseInt(values[0]);
+                int oldy = Integer.parseInt(values[1]);
+                int newx = Integer.parseInt(values[2]);
+                int newy = Integer.parseInt(values[3]);
+
+                System.out.println("oldx: " + oldx + ", oldy: " + oldy + ", newx: " + newx + ", newy: " + newy);
+
+
+            }
+        } catch ( IOException e) {
+            e.printStackTrace();
+            throw new IOException("Problème durant la lecture du fichier", e);
+        }
     }
 
 
     public static void main(String[] args) {
 
-        String pseudo1 = "Player1";
-        String pseudo2 = "Player2";
+        String pseudo1 = "p1";
+        String pseudo2 = "p2";
         String fileName = createName(pseudo1, pseudo2);
 
         Tuple move1 = new Tuple(1, 2);
@@ -58,6 +78,8 @@ public class HistoriqueHandler {
         try {
             HistoriqueHandler.ecritureHistorique(fileName, move1, move2);
             HistoriqueHandler.ecritureHistorique(fileName, move3, move4);
+            HistoriqueHandler.lectureHistorique(fileName);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
