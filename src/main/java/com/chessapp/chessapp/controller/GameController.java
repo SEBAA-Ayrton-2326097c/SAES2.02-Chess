@@ -33,7 +33,7 @@ public class GameController {
     @FXML
     private GridPane grid;
     @FXML
-    private NewGameController newGameController;
+    private NewGameController newGameController; // le fxml place le controlleur lors de l'importation du fichier fxml NewGameTab.fxml
 
     private Piece movingPiece;
     private StackPane[][] cases;
@@ -176,7 +176,8 @@ public class GameController {
                 if (!movingPiece.equals(currentKing)) return;
 
                 if(!currentKing.canPieceMove(plateau)) {
-                    endGame(currentTurnColor * -1);
+                    endGame(currentTurnColor);
+                    System.out.println("ligne 179");
                     return;
                 }
             }
@@ -216,7 +217,7 @@ public class GameController {
 
                 if(plateau.getPiece(destX, destY) != null) {
                     if (plateau.getPiece(destX, destY).equals(enemyKing)) {
-                        endGame(-1);
+                        endGame(currentTurnColor);
                     } else {
                         enemyTeam.remove(plateau.getPiece(destX, destY));
                     }

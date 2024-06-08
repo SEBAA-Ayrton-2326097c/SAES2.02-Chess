@@ -31,14 +31,11 @@ public class NewGameController {
     private BooleanProperty gameRunning;
     private BooleanProperty playerOneImported;
     private BooleanProperty playerTwoImported;
-    private PlayerHandler playerHandler;
 
     @FXML
     private void initialize() throws IOException {
         System.out.println("init GameController");
         infoLabel.setText("Merci de importer vos pseudos (3 chars min.)");
-
-        playerHandler = new PlayerHandler();
 
         createBindings();
     }
@@ -58,7 +55,7 @@ public class NewGameController {
     public void importPlayerOne() {
         playerOneName = textFieldPlayerOne.getText();
         try {
-            playerHandler.verficationJoueur(playerOneName.toLowerCase());
+            PlayerHandler.verficationJoueur(playerOneName.toLowerCase());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +69,7 @@ public class NewGameController {
     public void importPlayerTwo() {
         playerTwoName = textFieldPlayerTwo.getText();
         try {
-            playerHandler.verficationJoueur(playerTwoName.toLowerCase());
+            PlayerHandler.verficationJoueur(playerTwoName.toLowerCase());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -138,10 +135,10 @@ public class NewGameController {
         gameRunning.set(false);
 
         if (winner == 1) {
-            playerHandler.finPartie(playerOneName, playerTwoName);
+            PlayerHandler.finPartie(playerOneName, playerTwoName);
             infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerOneName));
         } else {
-            playerHandler.finPartie(playerTwoName, playerOneName);
+            PlayerHandler.finPartie(playerTwoName, playerOneName);
             infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerTwoName));
         }
 
