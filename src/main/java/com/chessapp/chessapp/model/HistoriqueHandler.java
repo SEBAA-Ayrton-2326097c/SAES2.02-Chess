@@ -34,14 +34,14 @@ public class HistoriqueHandler {
     }
 
     /**
-     * Methode qui va creer le nom du fichier sous la forme psuedo1-pseudo2-dd-MM-yyyy_HH:mm.csv
+     * Methode qui va creer le nom du fichier sous la forme psuedo1-pseudo2-dd-MM-yyyy_HH-mm.csv
      * @param pseudo1
      * @param pseudo2
      * @return String
      */
     public static String createName(String pseudo1, String pseudo2) {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm");
         String formattedDate = now.format(formatter);
 
         return pseudo1 + "-" + pseudo2 + "-" + formattedDate + ".csv";
