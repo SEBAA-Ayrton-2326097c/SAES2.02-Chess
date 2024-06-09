@@ -5,6 +5,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class HistoriqueHandler {
+    /**
+     * Methode qui prend en paramtre 2 coordonnes et qui va creer ou modifier un fichier csv
+     * en ajoutant a chaque lignes le x et y des 2  coordonnes
+     * @param fileName
+     * @param sourceCoords
+     * @param destCoords
+     * @throws IOException
+     */
     public static void ecritureHistorique(String fileName, Tuple sourceCoords, Tuple destCoords) throws IOException {
         String directoryPath = "Data/Historique";
         File directory = new File(directoryPath);
@@ -25,6 +33,12 @@ public class HistoriqueHandler {
         }
     }
 
+    /**
+     * Methode qui va creer le nom du fichier sous la forme psuedo1-pseudo2-dd-MM-yyyy_HH:mm.csv
+     * @param pseudo1
+     * @param pseudo2
+     * @return String
+     */
     public static String createName(String pseudo1, String pseudo2) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm");
@@ -33,6 +47,13 @@ public class HistoriqueHandler {
         return pseudo1 + "-" + pseudo2 + "-" + formattedDate + ".csv";
     }
 
+
+    /**
+     * Methode qui va prendre en parametre le nom d'un fichier et va lire ligne par ligne
+     * puis va ...(je te laisse finir)
+     * @param file
+     * @throws IOException
+     */
     public static void lectureHistorique(String file) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = reader.readLine();
@@ -54,6 +75,7 @@ public class HistoriqueHandler {
                 System.out.println("oldx: " + oldx + ", oldy: " + oldy + ", newx: " + newx + ", newy: " + newy);
 
 
+
             }
         } catch ( IOException e) {
             e.printStackTrace();
@@ -63,7 +85,7 @@ public class HistoriqueHandler {
 
 
     public static void main(String[] args) {
-
+/**
         String pseudo1 = "p1";
         String pseudo2 = "p2";
         String fileName = createName(pseudo1, pseudo2);
@@ -74,11 +96,11 @@ public class HistoriqueHandler {
         Tuple move3 = new Tuple(3, 4);
         Tuple move4 = new Tuple(4, 5);
 
-
+**/
         try {
-            HistoriqueHandler.ecritureHistorique(fileName, move1, move2);
-            HistoriqueHandler.ecritureHistorique(fileName, move3, move4);
-            HistoriqueHandler.lectureHistorique(fileName);
+            //HistoriqueHandler.ecritureHistorique(fileName, move1, move2);
+            //HistoriqueHandler.ecritureHistorique(fileName, move3, move4);
+            HistoriqueHandler.lectureHistorique("Data/Historique/test.csv");
 
         } catch (IOException e) {
             e.printStackTrace();
