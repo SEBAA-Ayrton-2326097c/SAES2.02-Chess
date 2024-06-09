@@ -6,6 +6,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import java.io.IOException;
@@ -26,16 +27,18 @@ public class NewGameController {
     private Button importPlayerTwoButton;
     @FXML
     private Label infoLabel;
+    @FXML
+    private CheckBox botCheckbox;
 
     private String playerOneName, playerTwoName;
     private BooleanProperty gameRunning;
     private BooleanProperty playerOneImported;
     private BooleanProperty playerTwoImported;
+    private BooleanProperty playingAgainstBot;
 
     @FXML
     private void initialize() throws IOException {
-        System.out.println("init GameController");
-        infoLabel.setText("Merci de importer vos pseudos (3 chars min.)");
+        infoLabel.setText("Merci d'importer vos pseudos (3 chars min.)");
 
         createBindings();
     }
@@ -47,7 +50,7 @@ public class NewGameController {
     public void startGame() throws Exception {
 
         gameRunning.set(true);
-        gameController.startGame(playerOneName, playerTwoName, true);
+        gameController.startGame(playerOneName, playerTwoName, playingAgainstBot.get(), 10);
         infoLabel.setText("Partie commencée, bonne chance !");
     }
 
@@ -55,7 +58,8 @@ public class NewGameController {
     public void importPlayerOne() {
         playerOneName = textFieldPlayerOne.getText();
         try {
-            PlayerHandler.verficationJoueur(playerOneName.toLowerCase());
+            PlayerHandler.verficationJoueur(
+                    playerOneName.toLowerCase().replaceAll("\\s", ""));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +73,8 @@ public class NewGameController {
     public void importPlayerTwo() {
         playerTwoName = textFieldPlayerTwo.getText();
         try {
-            PlayerHandler.verficationJoueur(playerTwoName.toLowerCase());
+            PlayerHandler.verficationJoueur(
+                    playerTwoName.toLowerCase().replaceAll("\\s", ""));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -87,8 +92,9 @@ public class NewGameController {
         gameRunning = new SimpleBooleanProperty(false);
         playerOneImported = new SimpleBooleanProperty(false);
         playerTwoImported = new SimpleBooleanProperty(false);
+        playingAgainstBot = new SimpleBooleanProperty(false);
 
-        BooleanBinding checkNamePlyOne = new BooleanBinding() {
+        BooleanBinding isTextfieldPlyOneAvailable = new BooleanBinding() {
             {
                 this.bind(textFieldPlayerOne.textProperty());
             }
@@ -98,29 +104,44 @@ public class NewGameController {
             }
         };
 
-        BooleanBinding checkNamePlyTwo = new BooleanBinding() {
+        BooleanBinding isTextfieldPlyTwoAvailable = new BooleanBinding() {
             {
-                this.bind(textFieldPlayerTwo.textProperty());
+                this.bind(textFieldPlayerTwo.textProperty(), botCheckbox.selectedProperty());
             }
             @Override
             protected boolean computeValue() {
-                return textFieldPlayerTwo.getText().length() > 2;
+                return textFieldPlayerTwo.getText().length() > 2 && !botCheckbox.isSelected();
             }
         };
-
-        importPlayerOneButton.disableProperty().bind(checkNamePlyOne.not());
-        importPlayerTwoButton.disableProperty().bind(checkNamePlyTwo.not());
 
         BooleanBinding checkBothPlayersImported = new BooleanBinding() {
             {
-                this.bind(playerOneImported, playerTwoImported);
+                this.bind(playerOneImported, playerTwoImported, playingAgainstBot);
             }
 
             @Override
             protected boolean computeValue() {
-                return playerOneImported.get() && playerTwoImported.get() && !gameRunning.get();
+                return playerOneImported.get() && (playerTwoImported.get() || playingAgainstBot.get() ) && !gameRunning.get();
             }
         };
+
+
+        BooleanBinding checkBotCheckbox = new BooleanBinding() {
+            {
+                this.bind(botCheckbox.selectedProperty());
+            }
+
+            @Override
+            protected boolean computeValue() {
+                playerTwoName = "BOT";
+                return botCheckbox.isSelected();
+            }
+        };
+
+        playingAgainstBot.bind(checkBotCheckbox);
+
+        importPlayerOneButton.disableProperty().bind(isTextfieldPlyOneAvailable.not());
+        importPlayerTwoButton.disableProperty().bind(isTextfieldPlyTwoAvailable.not());
 
         playButton.disableProperty().bind(checkBothPlayersImported.not());
     }
@@ -134,14 +155,17 @@ public class NewGameController {
     public void gameEnded(int winner) throws IOException {
         gameRunning.set(false);
 
-        if (winner == 1) {
-            PlayerHandler.finPartie(playerOneName, playerTwoName);
-            infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerOneName));
-        } else {
-            PlayerHandler.finPartie(playerTwoName, playerOneName);
-            infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.", playerTwoName));
-        }
+        infoLabel.setText(String.format("Victoire de %s! Vous pouvez à présent relancer une partie.",
+                (winner == 1) ? playerOneName : playerTwoName));
 
+        if (!playingAgainstBot.get()) {
+            if (winner == 1) {
+                PlayerHandler.finPartie(playerOneName, playerTwoName);
+
+            } else {
+                PlayerHandler.finPartie(playerTwoName, playerOneName);
+            }
+        }
     }
 
     /**

@@ -20,13 +20,18 @@ ids personnalisés
     -fx-text-fill: white;
     -fx-font-weight: 900;
     -fx-font-size: 25px;
-    -fx-background-color: lightgreen;
+    -fx-background-color: red;
     -fx-padding: 10 20 10 20;
     -fx-effect: dropshadow(gaussian, #3ea83e, 10, 0, 0, 1);
 }
 
+#playerNameTextfield{
+    -fx-font-style: italic;
+    -fx-font-weight: 100;
+}
+
 #playButton:hover {
-    -fx-background-color: #9cec9c;
+    -fx-effect: dropshadow(gaussian, #3ea83e, 20, 0, 0, 1);
 }
 
 #importPlayerButton {
