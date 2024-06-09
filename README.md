@@ -12,20 +12,21 @@ Ce projet consiste à développer une application de jeu d'échecs utilisant Jav
 
 ## Fonctionnalités
 1. Modes de jeu
-• Contre un bot : Jouez contre un adversaire contrôlé par l'ordinateur qui effectue des mouvements aléatoires.
-• 1v1 sur la même machine : Deux joueurs peuvent s'affronter en alternant les tours sur un même appareil.
-• Tournoi : Organisez des tournois à élimination directe entre plusieurs participants.
+   - Contre un bot : Jouez contre un adversaire contrôlé par l'ordinateur qui effectue des mouvements aléatoires.
+   - 1v1 sur la même machine : Deux joueurs peuvent s'affronter en alternant les tours sur un même appareil.
+   - Tournoi : Organisez des tournois à élimination directe entre plusieurs participants.
 
-2. Limite de temps
+
+3. Limite de temps
 • Les joueurs peuvent définir une limite de temps pour chaque partie. Si le temps imparti est dépassé, une pièce sera déplacée aléatoirement.
 
-3. Gestion des profils
+4. Gestion des profils
 • Enregistrez les profils des joueurs avec leur pseudonyme, nombre de parties jouées et gagnées.
 
-4. Sauvegarde et reprise des parties
+5. Sauvegarde et reprise des parties
 • Sauvegardez l'état actuel d'une partie pour la reprendre plus tard. Un bouton permet de charger une partie sauvegardée.
 
-5. Consultation des statistiques et de l'historique
+6. Consultation des statistiques et de l'historique
 • Consultez les statistiques des joueurs et l'historique des parties précédentes.
 
 
